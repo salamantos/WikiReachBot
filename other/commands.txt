@@ -1,0 +1,11 @@
+help - Помощь по командам
+startg - Начать игру
+endg - Закончить текущую игру
+change_art - Выбрать статью, до которой нужно добраться
+hitler_mode - REACH HITLER!
+score - Узнать статистику игр
+open - Открыть статью в Википедии
+
+
+cd /home/salamantos/PycharmProjects/Telegram_bots
+source env/bin/activate

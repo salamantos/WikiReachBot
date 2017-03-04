@@ -1,0 +1,281 @@
+0: ------------- Начало сеанса -------------"
+0: salamantos_first_bot
+"
+0: ------------- Конец сеанса --------------
+
+
+"
+0: ------------- Начало сеанса -------------"
+0: salamantos_first_bot
+"
+0: @salamantos (109029852) написал: "Crib"
+0: ------------- Конец сеанса --------------
+
+
+"
+0: ------------- Начало сеанса -------------"
+0: salamantos_first_bot
+"
+0: @salamantos (109029852) написал: "Did"
+0: ------------- Конец сеанса --------------
+
+
+"
+0: ------------- Начало сеанса -------------"
+0: salamantos_first_bot
+"
+0: @salamantos (109029852) написал: "Ask"
+0: ------------- Конец сеанса --------------
+
+
+"
+0: ------------- Начало сеанса -------------"
+0: salamantos_first_bot
+"
+0: @salamantos (109029852) написал: "Ghh"
+0: ---> @ () бот ответил: "Message(message_id=2409, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488613411, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'Ghh', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+0: Бот остановлен."
+0: ------------- Конец сеанса --------------
+
+
+"
+0: ------------- Начало сеанса -------------
+0: salamantos_first_bot
+
+0: Бот остановлен.
+0: ------------- Конец сеанса --------------
+
+
+
+1: ------------- Начало сеанса -------------
+1: salamantos_first_bot
+
+1: Бот остановлен.
+1: ------------- Конец сеанса --------------
+
+
+
+1488614081.79: ------------- Начало сеанса -------------
+1488614081.79: salamantos_first_bot
+
+1488614090: @salamantos (109029852) написал: "Did"
+1488614081.79: ---> @ () бот ответил: "Message(message_id=2412, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488614090, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'Did', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+1488614081.79: ------------- Конец сеанса --------------
+
+
+
+1488614163.25: ------------- Начало сеанса -------------
+1488614163.25: salamantos_first_bot
+
+1488614182: @salamantos (109029852) написал: "F"
+1488614163.25: ---> @ () бот ответил: "Message(message_id=2415, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488614182, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'F', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+1488614163.25: ------------- Конец сеанса --------------
+
+
+
+1488614208.87: ------------- Начало сеанса -------------
+1488614208.87: salamantos_first_bot
+
+1488614222: @salamantos (109029852) написал: "Week"
+1488614208.87: ---> @ () бот ответил: "Message(message_id=2418, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488614222, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'Week', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+1488614208.87: Бот остановлен.
+1488614208.87: ------------- Конец сеанса --------------
+
+
+
+1488614379.46: ------------- Начало сеанса -------------
+1488614379.66: salamantos_first_bot
+
+1488614390: @salamantos (109029852) написал: "Brisk"
+1488614390.94: ---> @ () бот ответил: "Message(message_id=2421, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488614390, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'Brisk', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+1488614398.18: Бот остановлен.
+<function sys_time at 0x7f0a05970aa0>: ------------- Конец сеанса --------------
+
+
+
+1488614848.35: ------------- Начало сеанса -------------
+1488614848.6: salamantos_first_bot
+
+1488614857.16: Бот остановлен.
+1488614883.53: ------------- Начало сеанса -------------
+1488614883.73: salamantos_first_bot
+
+1488614890: @salamantos (109029852) написал: "Shx"
+1488614890.74: ---> @ () бот ответил: "Message(message_id=2424, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488614890, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'Shx', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+1488614894.55: Бот остановлен.
+1488614894.55: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 08:08:57: ------------- Начало сеанса -------------
+2017-03-04 08:08:57: salamantos_first_bot
+
+2017-03-04 08:09:02: @salamantos (109029852) написал: "Isms"
+2017-03-04 08:09:03: ---> @ () бот ответил: "Message(message_id=2427, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488614943, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'Isms', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+2017-03-04 08:09:04: Бот остановлен.
+2017-03-04 08:09:04: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 09:30:01: ------------- Начало сеанса -------------
+2017-03-04 09:54:16: ------------- Начало сеанса -------------
+2017-03-04 09:54:17: salamantos_first_bot
+
+2017-03-04 09:54:27: @salamantos (109029852) написал: "2"
+2017-03-04 09:54:28: ---> @ () бот ответил: "Message(message_id=2430, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488621268, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'2', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+2017-03-04 09:54:31: Бот остановлен.
+2017-03-04 09:54:31: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 09:54:53: ------------- Начало сеанса -------------
+2017-03-04 09:54:53: salamantos_first_bot
+
+2017-03-04 09:54:56: Бот остановлен.
+2017-03-04 09:54:56: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 09:55:20: ------------- Начало сеанса -------------
+2017-03-04 09:55:21: salamantos_first_bot
+
+2017-03-04 09:55:25: @salamantos (109029852) написал: "8"
+2017-03-04 09:55:26: ---> @ () бот ответил: "Message(message_id=2433, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488621326, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'8', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+2017-03-04 09:55:27: 
+Бот остановлен.
+2017-03-04 09:55:27: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 09:57:59: ------------- Начало сеанса -------------
+2017-03-04 09:57:59: salamantos_first_bot
+
+
+2017-03-04 09:58:04: Бот остановлен.
+2017-03-04 09:58:04: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 10:19:00: ------------- Начало сеанса -------------
+2017-03-04 10:19:03: WikiReachBot
+
+
+2017-03-04 10:19:06: Бот остановлен.
+2017-03-04 10:19:06: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 11:29:14: ------------- Начало сеанса -------------
+2017-03-04 11:29:20: WikiReachBot
+
+
+2017-03-04 11:29:47: Бот остановлен.
+2017-03-04 11:29:47: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 11:30:37: ------------- Начало сеанса -------------
+2017-03-04 11:30:37: WikiReachBot
+
+
+2017-03-04 11:30:40: Бот остановлен.
+2017-03-04 11:30:40: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 11:31:43: ------------- Начало сеанса -------------
+2017-03-04 11:31:43: salamantos_first_bot
+
+2017-03-04 11:31:51: @salamantos (109029852) написал: "Update(update_id=894830575, message=Message(message_id=2847, sender=User(id=109029852, first_name=u'Matvey', last_name=u'Volkov', username=u'salamantos'), date=1488627111, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'\u041a\u0435\u043a', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None), edited_message=None, inline_query=None, chosen_inline_result=None, callback_query=None)"
+2017-03-04 11:31:51: @salamantos (109029852) написал: "Кек"
+2017-03-04 11:31:51: ---> @ () бот ответил: "Message(message_id=2848, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488627111, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'\u041a\u0435\u043a', entities=None, audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+
+2017-03-04 11:31:56: Бот остановлен.
+2017-03-04 11:31:56: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 11:32:54: ------------- Начало сеанса -------------
+2017-03-04 11:32:54: salamantos_first_bot
+
+
+2017-03-04 11:32:59: Бот остановлен.
+2017-03-04 11:32:59: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 11:34:52: ------------- Начало сеанса -------------
+2017-03-04 11:34:52: salamantos_first_bot
+
+2017-03-04 11:35:14: @salamantos (109029852) написал: "Update(update_id=894830576, message=Message(message_id=2850, sender=User(id=109029852, first_name=u'Matvey', last_name=u'Volkov', username=u'salamantos'), date=1488627314, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'/help', entities=[MessageEntity(type=u'bot_command', offset=0, length=5, url=None, user=None)], audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None), edited_message=None, inline_query=None, chosen_inline_result=None, callback_query=None)"
+2017-03-04 11:35:14: @salamantos (109029852) написал: "/help"
+2017-03-04 11:35:15: ---> @ () бот ответил: "Message(message_id=2851, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488627315, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'/help', entities=[MessageEntity(type=u'bot_command', offset=0, length=5, url=None, user=None)], audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+2017-03-04 11:35:20: @salamantos (109029852) написал: "Update(update_id=894830577, message=Message(message_id=2853, sender=User(id=109029852, first_name=u'Matvey', last_name=u'Volkov', username=u'salamantos'), date=1488627320, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'/help', entities=[MessageEntity(type=u'bot_command', offset=0, length=5, url=None, user=None)], audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None), edited_message=None, inline_query=None, chosen_inline_result=None, callback_query=None)"
+2017-03-04 11:35:20: @salamantos (109029852) написал: "/help"
+2017-03-04 11:35:21: ---> @ () бот ответил: "Message(message_id=2854, sender=User(id=353206446, first_name=u'\u041f\u0435\u0440\u0432\u044b\u0439 \u0431\u043e\u0442', last_name=None, username=u'salamantos_first_bot'), date=1488627321, edit_date=None, chat=Chat(id=109029852, type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, text=u'/help', entities=[MessageEntity(type=u'bot_command', offset=0, length=5, url=None, user=None)], audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None)"
+
+2017-03-04 11:35:26: Бот остановлен.
+2017-03-04 11:35:26: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 11:51:29: ------------- Начало сеанса -------------
+2017-03-04 11:51:30: salamantos_first_bot
+
+
+2017-03-04 11:51:46: Бот остановлен.
+2017-03-04 11:51:46: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 11:51:51: ------------- Начало сеанса -------------
+2017-03-04 11:51:51: salamantos_first_bot
+
+
+2017-03-04 11:51:57: Бот остановлен.
+2017-03-04 11:51:57: ------------- Конец сеанса --------------
+
+
+
+2017-03-04 11:53:02: ------------- Начало сеанса -------------
+2017-03-04 11:53:02: salamantos_first_bot
+
+2017-03-04 11:53:23: ------------- Начало сеанса -------------
+2017-03-04 11:53:24: salamantos_first_bot
+
+2017-03-04 11:54:14: ------------- Начало сеанса -------------
+2017-03-04 11:54:14: salamantos_first_bot
+
+2017-03-04 11:54:27: ------------- Начало сеанса -------------
+2017-03-04 11:54:27: salamantos_first_bot
+
+2017-03-04 11:54:44: ------------- Начало сеанса -------------
+2017-03-04 11:54:44: salamantos_first_bot
+
+2017-03-04 11:54:51: ------------- Начало сеанса -------------
+2017-03-04 11:54:51: salamantos_first_bot
+
+2017-03-04 11:54:54: ------------- Начало сеанса -------------
+2017-03-04 11:54:54: salamantos_first_bot
+
+2017-03-04 11:55:08: ------------- Начало сеанса -------------
+2017-03-04 11:55:08: salamantos_first_bot
+
+2017-03-04 11:55:17: ------------- Начало сеанса -------------
+2017-03-04 11:55:17: salamantos_first_bot
+
+2017-03-04 11:55:27: ------------- Начало сеанса -------------
+2017-03-04 11:55:27: salamantos_first_bot
+
+2017-03-04 12:26:11: ------------- Начало сеанса -------------
+2017-03-04 12:26:12: salamantos_first_bot
+
+2017-03-04 12:26:32: ------------- Начало сеанса -------------
+2017-03-04 12:26:33: salamantos_first_bot
+
+2017-03-04 12:26:40: ------------- Начало сеанса -------------
+2017-03-04 12:26:42: salamantos_first_bot
+
+2017-03-04 12:27:32: ------------- Начало сеанса -------------
+2017-03-04 12:27:33: salamantos_first_bot
+
