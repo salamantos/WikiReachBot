@@ -1,5 +1,6 @@
-# coding=utf-8
+# coding: utf8
 
+import sys
 import time
 from twx.botapi import TelegramBot
 from bs4 import BeautifulSoup
@@ -7,6 +8,9 @@ import urllib2
 
 import settings
 from storage import Storage
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 
 # Модуль логов
@@ -49,6 +53,10 @@ def recognize_update(update_object):
 def answer(bot, send_user_id, send_answer_text='Это пустое сообщение'):
     result = bot.send_message(send_user_id, send_answer_text).wait()
     log_write('bot', result, sys_time())
+    try:
+        log_write('bot', send_answer_text, sys_time())
+    except Exception:
+        pass
 
 
 def init_bot(init_token):
@@ -73,12 +81,13 @@ def open_link(url):
     current_page_link = soup.find(rel="canonical").get('href')
     current_page_header = soup.find(id="firstHeading").get_text()
     print('Current Link is ' + current_page_link)
-    print('Current Page is ' + str(current_page_header) + '\n')
+    print('Current Page is ' + str(current_page_header).decode('utf-8') + '\n')
 
     soup = soup.find(id="mw-content-text")
     a = soup.find_all('a')
 
     result = []
+    link_id = 1
     for link in a:
         try:
             href = link.get('href')
@@ -93,15 +102,78 @@ def open_link(url):
                     if 'img' in str(link):
                         next_link = True
                 if not next_link:
-                    result.append([title, href])
+                    result.append([link_id, title, href])
+                    link_id += 1
         except TypeError:
             log_write('sys', 'EMPTY HREF!!!', sys_time())  # Не происходит из-за проверки not (title is None)
-    return result
+    return result, current_page_link, current_page_header
 
 
-def init_game():
+def init_game(user_id):
     link_to_open = settings.random_page_link
-    return open_link(link_to_open)
+    links_list, current_article_url, header = open_link(link_to_open)
+    answer = u'Вот список ссылок по статье ' + str(header) + ':\n'
+    for link in links_list:
+        if link[0] > 100:
+            break
+        answer = answer + unicode(link[0]) + '. ' + link[1] + '\n'
+    answer += u'\n(Вам нужно дойти до статьи\n' + storage.data[user_id]['goal_article_header'] + u')\n\nЧто выбираете?'
+
+    storage.data[user_id]['state'] = 'game'
+    storage.data[user_id]['question'] = 'answer_article_id'
+    storage.data[user_id]['game'] = {
+        'links_list': links_list,
+        'current_article_url': current_article_url,
+        'current_article_header': header,
+        'links_count': 0
+    }
+    return answer
+
+
+def change_article(user_id, article_header, article_url):
+    # Лишнее условие?
+    if article_header is not None and article_url is not None:
+        storage.data[user_id]['goal_article_header'] = article_header
+        storage.data[user_id]['goal_article_url'] = article_url
+        return u'Целевая статья успешно изменена на ' + article_header
+    elif article_url is not None:
+        tmp1, tmp2, article_header = open_link(article_url)
+        storage.data[user_id]['goal_article_header'] = article_header
+        storage.data[user_id]['goal_article_url'] = article_url
+        return u'Целевая статья успешно изменена на ' + article_header
+    else:
+        storage.data[user_id]['question'] = 'article_link'
+        return u'Введите ссылку на статью'
+
+
+def answer_article_id(storage, user_id, username, text):
+    try:
+        article_id = int(text)
+        links_list = storage.data[user_id]['game']['links_list']
+        link = links_list[article_id - 1]
+    except ValueError:
+        return 'Неверный номер'
+
+    new_links_list, current_article_url, link[1] = open_link(settings.url_prefix + link[2])
+
+    # Проверка, не дошли ли еще и не закончились ли ходы
+
+    storage.data[user_id]['game']['links_count'] += 1
+    answer = u'Вот список ссылок по статье ' + str(link[1]) + ':\n'
+    for new_link in new_links_list:
+        if new_link[0] > 100:
+            break
+        answer = answer + unicode(new_link[0]) + '. ' + new_link[1] + '\n'
+    answer += u'\n(Вам нужно дойти до статьи\n' + storage.data[user_id]['goal_article_header'] + \
+              u'\n\nУже сделано ходов: ' + str(storage.data[user_id]['game']['links_count']) + u')\n\nЧто выбираете?'
+
+    storage.data[user_id]['state'] = 'game'
+    storage.data[user_id]['question'] = 'answer_article_id'
+    storage.data[user_id]['game']['links_list'] = new_links_list
+    storage.data[user_id]['game']['current_article_url'] = link[2]
+    storage.data[user_id]['game']['current_article_header'] = link[1]
+
+    return answer
 
 
 # Модуль комманд бота
@@ -118,8 +190,7 @@ def c_start_game(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
     if storage.data[user_id]['state'] == 'waitForStart':
-        storage.data[user_id]['state'] = 'game'
-        return 'init_game()'
+        return init_game(user_id)
     elif storage.data[user_id]['state'] == 'game':
         return u'Вы уже начали игру :)'
     else:
@@ -131,20 +202,20 @@ def c_end_game(session_continues, storage, user_id, username):
         storage.new_user(username, user_id)
         return u'Вы не играете сейчас в игру'
     if storage.data[user_id]['state'] == 'game':
-        storage.data[user_id]['state'] = 'waitForStart'
+        storage.del_user(user_id)
         return 'stop_game()'
     else:
         return u'Вы не играете сейчас в игру'
 
 
-def c_change_article(session_continues, storage, user_id, username, article=''):
+def c_change_article(session_continues, storage, user_id, username, article_header=None, article_url=None):
     if not session_continues:
         storage.new_user(username, user_id)
         storage.data[user_id]['state'] = 'waitForCommandAnswer'
-        return 'change_article(article)'
+        return change_article(user_id, article_header, article_url)
     if storage.data[user_id]['state'] == 'waitForStart':
         storage.data[user_id]['state'] = 'waitForCommandAnswer'
-        return 'change_article(article)'
+        return change_article(user_id, article_header, article_url)
     elif storage.data[user_id]['state'] == 'game':
         return u'Нельзя сменить целевую статью во время игры'
     else:
@@ -152,7 +223,11 @@ def c_change_article(session_continues, storage, user_id, username, article=''):
 
 
 def c_hitler_mode(session_continues, storage, user_id, username):
-    c_change_article(session_continues, storage, user_id, username, 'Гитлер')
+    result = c_change_article(session_continues, storage, user_id, username, settings.hitler_article_header,
+                              settings.hitler_article_url)
+    storage.data[user_id]['state'] = 'waitForStart'
+    storage.data[user_id]['question'] = ''
+    return result
 
 
 def c_score(session_continues, storage, user_id, username):
@@ -171,8 +246,26 @@ def c_open(session_continues, storage, user_id, username):
         return 'open_article()'
 
 
+def understand_text(session_continues, storage, user_id, username, text):
+    if not session_continues:
+        storage.new_user(username, user_id)
+        return u'Хотите начать игру?\nНаберите /start_game или посмотрите /help для справки по командам'
+    if storage.data[user_id]['question'] == 'article_link':
+        try:
+            result = change_article(user_id, None, text)
+            storage.data[user_id]['state'] = 'waitForStart'
+            storage.data[user_id]['question'] = ''
+            return result
+        except ValueError:
+            return u'Ссылка не работает, попробуйте снова'
+    elif storage.data[user_id]['question'] == 'answer_article_id':
+        return answer_article_id(storage, user_id, username, text)
+    else:
+        return u'Хотите начать игру?\nНаберите /start_game или посмотрите /help для справки по командам'
+
+
 commands_list = {
-    u'/help': c_help,
+    '/help': c_help,
     '/start_game': c_start_game,
     '/end_game': c_end_game,
     '/change_article': c_change_article,

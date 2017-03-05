@@ -2,7 +2,7 @@
 
 import time
 from functions import sys_time, log_write, write_bot_name, recognize_update, get_updates_for_bot, commands_list, \
-    storage, answer, log_file, init_bot
+    storage, answer, log_file, init_bot, understand_text
 
 # Включение бота
 log_write('sys', '------------- Начало сеанса -------------', sys_time())
@@ -47,13 +47,13 @@ try:
 
             # Если текстовый запрос, пытаемся понять его
             if not give_answer:
-                answer_text = text
+                answer_text = understand_text(user_id in storage.data, storage, user_id, username, text)
 
                 give_answer = True
 
             answer(bot, user_id, answer_text)
             offset += 1  # id следующего обновления
-            time.sleep(0.01)
+        time.sleep(0.01)
 
 except KeyboardInterrupt:
     log_write('endl', '', sys_time())
