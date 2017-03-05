@@ -52,12 +52,12 @@ def answer(bot, send_user_id, send_answer_text='Это пустое сообще
 
 
 def init_bot(init_token):
-    new_bot = TelegramBot(init_token)
-    new_bot.update_bot_info().wait()
-    return new_bot
+    bot = TelegramBot(init_token)
+    bot.update_bot_info().wait()
+    return bot
 
 
-def get_updates_for_bot(offset):
+def get_updates_for_bot(bot, offset):
     return bot.get_updates(offset).wait()
 
 
@@ -117,39 +117,42 @@ def c_help(session_continues, storage, user_id, username):
 def c_start_game(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
-    if not session_continues or not storage.data[user_id]['state'] == 'game':
+    if storage.data[user_id]['state'] == 'waitForStart':
+        storage.data[user_id]['state'] = 'game'
         return 'init_game()'
-    else:
+    elif storage.data[user_id]['state'] == 'game':
         return u'Вы уже начали игру :)'
+    else:
+        return u'Ответьте на вопрос, плез'
 
 
 def c_end_game(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
+        return u'Вы не играете сейчас в игру'
     if storage.data[user_id]['state'] == 'game':
+        storage.data[user_id]['state'] = 'waitForStart'
         return 'stop_game()'
     else:
         return u'Вы не играете сейчас в игру'
 
 
-def c_change_article(session_continues, storage, user_id, username):
+def c_change_article(session_continues, storage, user_id, username, article=''):
     if not session_continues:
         storage.new_user(username, user_id)
-    if not session_continues or not storage.data[user_id]['state'] == 'game':
         storage.data[user_id]['state'] = 'waitForCommandAnswer'
-        return 'change_article()'
-    else:
+        return 'change_article(article)'
+    if storage.data[user_id]['state'] == 'waitForStart':
+        storage.data[user_id]['state'] = 'waitForCommandAnswer'
+        return 'change_article(article)'
+    elif storage.data[user_id]['state'] == 'game':
         return u'Нельзя сменить целевую статью во время игры'
+    else:
+        return u'Ответьте на вопрос, плез'
 
 
 def c_hitler_mode(session_continues, storage, user_id, username):
-    if not session_continues:
-        storage.new_user(username, user_id)
-    if not session_continues or not storage.data[user_id]['state'] == 'game':
-        storage.data[user_id]['state'] = 'waitForStart'
-        return 'change_article_to_hitler()'
-    else:
-        return u'Нельзя сменить целевую статью во время игры'
+    c_change_article(session_continues, storage, user_id, username, 'Гитлер')
 
 
 def c_score(session_continues, storage, user_id, username):
@@ -169,7 +172,7 @@ def c_open(session_continues, storage, user_id, username):
 
 
 commands_list = {
-    '/help': c_help,
+    u'/help': c_help,
     '/start_game': c_start_game,
     '/end_game': c_end_game,
     '/change_article': c_change_article,
@@ -182,12 +185,12 @@ commands_list = {
 # Модуль инициализации переменных
 # -------------------------------------------------------------------------
 
-def write_bot_name():
+def write_bot_name(bot):
     log_write('sys', bot.username + '\n', sys_time())
 
 
 log_file = open('logs/logs.txt', 'a')
 
-bot = init_bot(settings.bot_token)
+# bot = init_bot(settings.bot_token)
 
 storage = Storage()

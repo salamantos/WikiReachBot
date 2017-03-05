@@ -1,18 +1,23 @@
 # coding=utf-8
 
 import time
-from functions import sys_time, log_write, write_bot_name, recognize_update, get_updates_for_bot
+from functions import sys_time, log_write, write_bot_name, recognize_update, get_updates_for_bot, commands_list, \
+    storage, answer, log_file, init_bot
 
 # Включение бота
 log_write('sys', '------------- Начало сеанса -------------', sys_time())
-write_bot_name()
+bot = init_bot('353206446:AAEnwupmsYWkapfe3RLjRmCbJ4ZN_NNYJww')
+write_bot_name(bot)
 
+# log_file.close()  # Fix it!
+
+print 'successfully'
 # Запуск прослушки Телеграма
 offset = 0
 try:
-    answer_text = ''
+    answer_text = u'<Заготовка под ответ>'
     while True:
-        updates = get_updates_for_bot(offset)  # Если нет обновлений, вернет пустой список
+        updates = get_updates_for_bot(bot, offset)  # Если нет обновлений, вернет пустой список
         for update in updates:
             # Получаем информацию о сообщении
             offset, user_id, username, text, message_date = recognize_update(update)
@@ -34,7 +39,7 @@ try:
             # Если получили комманду
             if text[0] == '/' and not give_answer:
                 try:
-                    answer_text = commands_list.get(text)(user_id in storage.data)
+                    answer_text = commands_list.get(text)(user_id in storage.data, storage, user_id, username)
 
                 except TypeError:
                     answer_text = u'Такой команды нет :с'
@@ -42,7 +47,7 @@ try:
 
             # Если текстовый запрос, пытаемся понять его
             if not give_answer:
-                # answer_text = text
+                answer_text = text
 
                 give_answer = True
 
@@ -57,5 +62,4 @@ except KeyboardInterrupt:
 #     log_write('Неизвестная ошибка')
 finally:
     log_write('sys', '------------- Конец сеанса --------------\n\n\n', sys_time())
-    close
-    log_file.close()
+    log_file.close()  # Fix it!
