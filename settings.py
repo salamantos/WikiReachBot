@@ -62,6 +62,7 @@ dictionary = {
 /help - Помощь по командам
 /start_game - Начать игру
 /end_game - Закончить текущую игру
+/answer - ответить (нужно для групповых чатов): answer <Ваш ответ>
 /change_article - Выбрать статью, до которой нужно добраться
 /hitler_mode - REACH HITLER!
 /set_difficulty - Настроить сложность игры

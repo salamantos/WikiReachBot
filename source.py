@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import time
+import re
 from functions import sys_time, log_write, write_bot_name, recognize_update, get_updates_for_bot, commands_list, \
     answer, log_file, init_bot, understand_text
 from storage import Storage
@@ -26,7 +27,7 @@ try:
         updates = get_updates_for_bot(bot, offset)  # Если нет обновлений, вернет пустой список
         for update in updates:
             # Получаем информацию о сообщении
-            offset, user_id, username, text, message_date = recognize_update(update)
+            offset, user_id, chat_id, username, text, message_date = recognize_update(update)
             give_answer = False  # Готов ли ответ
 
             # Если не текстовое сообщение
@@ -45,7 +46,17 @@ try:
             # Если получили комманду
             if text[0] == '/' and not give_answer:
                 try:
-                    answer_text, reply_markup = commands_list.get(text)(user_id in storage.data, storage, user_id, username)
+                    if '@WikiReachBot' in text:
+                        text = re.sub(r'@WikiReachBot', '', text)
+                    if '/answer' in text:
+                        text = re.sub(r'/answer ', '', text)
+                        answer_text, reply_markup = commands_list['/answer'](user_id in storage.data, storage,
+                                                                             user_id, username, text)
+                        give_answer = True
+
+                    if not give_answer:
+                        answer_text, reply_markup = commands_list.get(text)(user_id in storage.data, storage, user_id,
+                                                                            username)
 
                 except TypeError:
                     answer_text = dictionary['non_existent_command']
@@ -57,7 +68,7 @@ try:
 
                 give_answer = True
 
-            answer(bot, user_id, answer_text, reply_markup)
+            answer(bot, chat_id, answer_text, reply_markup)
             offset += 1  # id следующего обновления
         time.sleep(0.01)
 

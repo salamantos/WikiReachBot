@@ -42,12 +42,12 @@ def recognize_update(update_object):
     update_id = update_object.update_id
     received_user_id = update_object.message.sender.id
     received_username = update_object.message.sender.username
-    # chat_id = update_object.message.chat.id
+    chat_id = update_object.message.chat.id
     # chat_type = update_object.message.chat.type  # Пока работаем с приватным, проверить
     request_date = update_object.message.date
     received_text = update_object.message.text
 
-    return update_id, received_user_id, received_username, received_text, request_date
+    return update_id, received_user_id, chat_id, received_username, received_text, request_date
 
 
 def answer(bot, send_user_id, send_answer_text, reply_markup=None):
@@ -384,6 +384,10 @@ def c_open(session_continues, storage, user_id, username):
         return 'open_article()', None
 
 
+def c_answer(session_continues, storage, user_id, username, text):
+    return understand_text(session_continues, storage, user_id, username, text), None
+
+
 def understand_text(session_continues, storage, user_id, username, text):
     if not session_continues:
         storage.new_user(username, user_id)
@@ -418,6 +422,7 @@ commands_list = {
     '/help': c_help,
     '/start_game': c_start_game,
     '/end_game': c_end_game,
+    '/answer': c_answer,
     '/change_article': c_change_article,
     '/hitler_mode': c_hitler_mode,
     '/set_difficulty': c_set_difficulty,
