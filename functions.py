@@ -2,7 +2,7 @@
 
 import sys
 import time
-from twx.botapi import TelegramBot, ReplyKeyboardMarkup
+from twx.botapi import TelegramBot, ReplyKeyboardMarkup, Error
 from bs4 import BeautifulSoup
 import urllib2
 
@@ -58,6 +58,11 @@ def answer(bot, send_user_id, send_answer_text, reply_markup=None):
             result = bot.send_message(send_user_id, send_answer_text).wait()
         else:
             result = bot.send_message(send_user_id, send_answer_text, reply_markup=reply_markup).wait()
+        if isinstance(send_answer_text, Error):
+            # Пытаемся снова
+            time.sleep(0.1)
+            answer(bot, send_user_id, send_answer_text, reply_markup)
+
         log_write('bot', result, sys_time())
         # try:
         #     log_write('bot', send_answer_text, sys_time())
@@ -69,6 +74,11 @@ def answer(bot, send_user_id, send_answer_text, reply_markup=None):
             result = bot.send_message(send_user_id, answer_text).wait()
         else:
             result = bot.send_message(send_user_id, answer_text, reply_markup).wait()
+        if isinstance(send_answer_text, Error):
+            # Пытаемся снова
+            time.sleep(0.1)
+            answer(bot, send_user_id, answer_text, reply_markup)
+
         log_write('bot', result, sys_time())
         time.sleep(0.05)
         # try:
@@ -91,18 +101,21 @@ def get_updates_for_bot(bot, offset):
 # -------------------------------------------------------------------------
 
 def open_link(url):
-    response = urllib2.urlopen(url)
-    html = response.read()
-    soup = BeautifulSoup(html, 'html.parser')
+    try:
+        response = urllib2.urlopen(url)
+        html = response.read()
+        soup = BeautifulSoup(html, 'html.parser')
 
-    # Достаем данные о текущей статье
-    current_page_link = soup.find(rel="canonical").get('href')
-    current_page_header = soup.find(id="firstHeading").get_text()
-    print('Current Link is ' + current_page_link)
-    print('Current Page is ' + str(current_page_header).decode('utf-8') + '\n')
+        # Достаем данные о текущей статье
+        current_page_link = soup.find(rel="canonical").get('href')
+        current_page_header = soup.find(id="firstHeading").get_text()
+        print('Current Link is ' + current_page_link)
+        print('Current Page is ' + str(current_page_header).decode('utf-8') + '\n')
 
-    soup = soup.find(id="mw-content-text")
-    a = soup.find_all('a')
+        soup = soup.find(id="mw-content-text")
+        a = soup.find_all('a')
+    except ZeroDivisionError:  # AttributeError:
+        pass
 
     result = []
     link_id = 1
