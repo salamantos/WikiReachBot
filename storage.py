@@ -2,8 +2,8 @@
 
 import settings
 
-# Здесь хранится информация текущей сессии: какие пользователи делали каие запросы и т.д.
 
+# Здесь хранится информация текущей сессии: какие пользователи делали какие запросы и т.д.
 class Storage:
     def __init__(self):
         self.data = dict()
@@ -16,8 +16,9 @@ class Storage:
             'question': '',  # Когда просим ответить на каой-то вопрос (какую статью сделать целевой)
             'game': {},
             'goal_article_url': settings.default_article_url,
-            'goal_article_header': settings.default_article_header
+            'goal_article_header': settings.default_article_header,
+            'difficulty': settings.default_difficulty
         }
 
     def del_user(self, user_id):
-        del(self.data[user_id])
+        del (self.data[user_id])

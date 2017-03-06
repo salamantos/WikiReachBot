@@ -2,7 +2,8 @@
 
 import time
 from functions import sys_time, log_write, write_bot_name, recognize_update, get_updates_for_bot, commands_list, \
-    storage, answer, log_file, init_bot, understand_text
+    answer, log_file, init_bot, understand_text
+from storage import Storage
 import settings
 from settings import dictionary
 
@@ -10,6 +11,7 @@ from settings import dictionary
 log_write('sys', '------------- Начало сеанса -------------', sys_time())
 bot = init_bot(settings.bot_token)
 write_bot_name(bot)
+storage = Storage()
 
 # log_file.close()  # Fix it!
 
@@ -18,6 +20,7 @@ print 'successfully'
 offset = 0
 try:
     answer_text = u'<Заготовка под ответ>'
+    reply_markup = None
     while True:
         # TypeError: 'NoneType' object is not iterable
         updates = get_updates_for_bot(bot, offset)  # Если нет обновлений, вернет пустой список
@@ -42,7 +45,7 @@ try:
             # Если получили комманду
             if text[0] == '/' and not give_answer:
                 try:
-                    answer_text = commands_list.get(text)(user_id in storage.data, storage, user_id, username)
+                    answer_text, reply_markup = commands_list.get(text)(user_id in storage.data, storage, user_id, username)
 
                 except TypeError:
                     answer_text = dictionary['non_existent_command']
@@ -50,11 +53,11 @@ try:
 
             # Если текстовый запрос, пытаемся понять его
             if not give_answer:
-                answer_text = understand_text(user_id in storage.data, storage, user_id, username, text)
+                answer_text, reply_markup = understand_text(user_id in storage.data, storage, user_id, username, text)
 
                 give_answer = True
 
-            answer(bot, user_id, answer_text)
+            answer(bot, user_id, answer_text, reply_markup)
             offset += 1  # id следующего обновления
         time.sleep(0.01)
 
