@@ -3,10 +3,12 @@
 import time
 from functions import sys_time, log_write, write_bot_name, recognize_update, get_updates_for_bot, commands_list, \
     storage, answer, log_file, init_bot, understand_text
+import settings
+from settings import dictionary
 
 # Включение бота
 log_write('sys', '------------- Начало сеанса -------------', sys_time())
-bot = init_bot('353206446:AAEnwupmsYWkapfe3RLjRmCbJ4ZN_NNYJww')
+bot = init_bot(settings.bot_token)
 write_bot_name(bot)
 
 # log_file.close()  # Fix it!
@@ -27,7 +29,7 @@ try:
             # Если не текстовое сообщение
             if text is None:
                 text = u'(Нет текста)'
-                answer_text = u'Вы не написали текста, сеньор!'
+                answer_text = dictionary['no_text']
                 give_answer = True
 
             # Логи
@@ -43,7 +45,7 @@ try:
                     answer_text = commands_list.get(text)(user_id in storage.data, storage, user_id, username)
 
                 except TypeError:
-                    answer_text = u'Такой команды нет :с'
+                    answer_text = dictionary['non_existent_command']
                 give_answer = True
 
             # Если текстовый запрос, пытаемся понять его

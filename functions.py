@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import urllib2
 
 import settings
+from settings import dictionary
 from storage import Storage
 
 reload(sys)
@@ -123,12 +124,13 @@ def open_link(url):
 def init_game(user_id):
     link_to_open = settings.random_page_link
     links_list, current_article_url, header = open_link(link_to_open)
-    answer = u'Вот список ссылок по статье ' + str(header) + ':\n'
+    answer = dictionary['this_is_links_list'] + str(header) + ':\n'
     for link in links_list:
         if link[0] > settings.max_links_count:
             break
         answer = answer + unicode(link[0]) + '. ' + link[1] + '\n'
-    answer += u'\n(Вам нужно дойти до статьи\n' + storage.data[user_id]['goal_article_header'] + u')\n\nЧто выбираете?'
+    answer += dictionary['your_goal_is'] + storage.data[user_id]['goal_article_header'] + \
+              dictionary['what_you_want_to_choose']
 
     storage.data[user_id]['state'] = 'game'
     storage.data[user_id]['question'] = 'answer_article_id'
@@ -141,20 +143,51 @@ def init_game(user_id):
     return answer
 
 
-def change_article(user_id, article_header, article_url):
-    # Лишнее условие?
+def change_article(user_id, article_header, article_url, searching=False):
+    if searching:
+        new_links_list, current_article_url, header = open_link(article_url)
+        if 'search' in current_article_url:
+            answer_list = []  # Список собщений для отправки
+            answer = u'Найденные статьи:\n'
+            counter = 1
+            for new_link in new_links_list:
+                answer = answer + unicode(new_link[0]) + '. ' + new_link[1] + '\n'
+                if counter >= settings.max_links_count:
+                    answer_list.append(answer)
+                    answer = ''
+                    counter = 0
+                counter += 1
+
+            answer += u'\n\nВыберите нужную или наберите cancel для отмены'
+            answer_list.append(answer)
+
+            storage.data[user_id]['state'] = 'waitForCommandAnswer'
+            storage.data[user_id]['question'] = 'answer_article_to_change_id'
+            storage.data[user_id]['temp_data'] = new_links_list
+            return answer_list
+        else:
+            article_header = header
+            article_url = current_article_url
+
     if article_header is not None and article_url is not None:
         storage.data[user_id]['goal_article_header'] = article_header
         storage.data[user_id]['goal_article_url'] = article_url
-        return u'Целевая статья успешно изменена на ' + article_header
+
+        storage.data[user_id]['state'] = 'waitForStart'
+        storage.data[user_id]['question'] = ''
+        return dictionary['goal_article_was_changed'] + article_header
     elif article_url is not None:
         tmp1, tmp2, article_header = open_link(article_url)
         storage.data[user_id]['goal_article_header'] = article_header
         storage.data[user_id]['goal_article_url'] = article_url
-        return u'Целевая статья успешно изменена на ' + article_header
+
+        storage.data[user_id]['state'] = 'waitForStart'
+        storage.data[user_id]['question'] = ''
+        return dictionary['goal_article_was_changed'] + article_header
     else:
         storage.data[user_id]['question'] = 'article_link'
-        return u'Введите ссылку на статью'
+
+        return dictionary['enter_article_link']
 
 
 def answer_article_id(storage, user_id, username, text):
@@ -163,27 +196,28 @@ def answer_article_id(storage, user_id, username, text):
         links_list = storage.data[user_id]['game']['links_list']
         link = links_list[article_id - 1]
     except ValueError:
-        return 'Неверный номер'
+        return dictionary['wrong_id']
     except IndexError:
-        return 'Неверный номер'
+        return dictionary['wrong_id']
 
     new_links_list, current_article_url, header = open_link(settings.url_prefix + link[2])
     storage.data[user_id]['game']['links_count'] += 1
 
     # Проверка, не дошли ли еще и не закончились ли ходы
     if header == storage.data[user_id]['goal_article_header']:
-        result = u'Поздравляю, вы победили за ' + str(storage.data[user_id]['game']['links_count']) + u' ходов!'
+        result = dictionary['congratulations'] + str(storage.data[user_id]['game']['links_count']) + \
+                 dictionary['steps']
         storage.del_user(user_id)
         return result
 
     if storage.data[user_id]['game']['links_count'] >= 3:
-        result = u'У вас закончились ходы, но статья ' + storage.data[user_id]['goal_article_header'] + \
-                 u' не достигнута'
+        result = dictionary['no_more_steps'] + storage.data[user_id]['goal_article_header'] + \
+                 dictionary['not_reached']
         storage.del_user(user_id)
         return result
 
     answer_list = []  # Список собщений для отправки
-    answer = u'Вот список ссылок по статье ' + str(link[1]) + ':\n'
+    answer = dictionary['this_is_links_list'] + str(link[1]) + ':\n'
     counter = 1
     for new_link in new_links_list:
         answer = answer + unicode(new_link[0]) + '. ' + new_link[1] + '\n'
@@ -193,8 +227,9 @@ def answer_article_id(storage, user_id, username, text):
             counter = 0
         counter += 1
 
-    answer += u'\n(Вам нужно дойти до статьи\n' + storage.data[user_id]['goal_article_header'] + \
-              u'\n\nУже сделано ходов: ' + str(storage.data[user_id]['game']['links_count']) + u')\n\nЧто выбираете?'
+    answer += dictionary['your_goal_is'] + storage.data[user_id]['goal_article_header'] + \
+              dictionary['steps_made'] + str(storage.data[user_id]['game']['links_count']) + \
+              dictionary['what_you_want_to_choose']
     answer_list.append(answer)
 
     storage.data[user_id]['state'] = 'game'
@@ -206,6 +241,22 @@ def answer_article_id(storage, user_id, username, text):
     return answer_list
 
 
+def answer_article_to_change_id(storage, user_id, username, text):
+    try:
+        article_id = int(text)
+        links_list = storage.data[user_id]['temp_data']
+        link = links_list[article_id - 1]
+    except ValueError:
+        return dictionary['wrong_id']
+    except IndexError:
+        return dictionary['wrong_id']
+
+
+    new_links_list, current_article_url, header = open_link(settings.url_prefix + link[2])
+    result = change_article(user_id, header, settings.url_prefix + current_article_url)
+    return result
+
+
 # Модуль комманд бота
 # -------------------------------------------------------------------------
 # Порядок аргументов: session_continues, storage, user_id, username
@@ -213,13 +264,13 @@ def answer_article_id(storage, user_id, username, text):
 def c_start(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
-    return u'Привет! Справка по командам: /help'
+    return dictionary['hello_at_start']
 
 
 def c_help(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
-    return u'Справка по командам:'
+    return dictionary['commands_help']
 
 
 def c_start_game(session_continues, storage, user_id, username):
@@ -228,20 +279,20 @@ def c_start_game(session_continues, storage, user_id, username):
     if storage.data[user_id]['state'] == 'waitForStart':
         return init_game(user_id)
     elif storage.data[user_id]['state'] == 'game':
-        return u'Вы уже начали игру :)'
+        return dictionary['game_already_started']
     else:
-        return u'Ответьте на вопрос, плез'
+        return dictionary['give_answer']
 
 
 def c_end_game(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
-        return u'Вы не играете сейчас в игру'
+        return dictionary['you_not_play']
     if storage.data[user_id]['state'] == 'game':
         storage.del_user(user_id)
-        return 'stop_game()'
+        return dictionary['game_stopped']
     else:
-        return u'Вы не играете сейчас в игру'
+        return dictionary['you_not_play']
 
 
 def c_change_article(session_continues, storage, user_id, username, article_header=None, article_url=None):
@@ -253,9 +304,9 @@ def c_change_article(session_continues, storage, user_id, username, article_head
         storage.data[user_id]['state'] = 'waitForCommandAnswer'
         return change_article(user_id, article_header, article_url)
     elif storage.data[user_id]['state'] == 'game':
-        return u'Нельзя сменить целевую статью во время игры'
+        return dictionary['cant_change_article_while_playing']
     else:
-        return u'Ответьте на вопрос, плез'
+        return dictionary['give_answer']
 
 
 def c_hitler_mode(session_continues, storage, user_id, username):
@@ -276,7 +327,7 @@ def c_open(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
     if not session_continues or not storage.data[user_id]['state'] == 'game':
-        return 'Открыть статью можно только во время игры'
+        return dictionary['opening_just_while_playing']
     else:
         storage.data[user_id]['state'] = 'waitForCommandAnswer'
         return 'open_article()'
@@ -285,19 +336,27 @@ def c_open(session_continues, storage, user_id, username):
 def understand_text(session_continues, storage, user_id, username, text):
     if not session_continues:
         storage.new_user(username, user_id)
-        return u'Хотите начать игру?\nНаберите /start_game или посмотрите /help для справки по командам'
+        return dictionary['invite_to_start']
     if storage.data[user_id]['question'] == 'article_link':
         try:
-            result = change_article(user_id, None, text)
-            storage.data[user_id]['state'] = 'waitForStart'
-            storage.data[user_id]['question'] = ''
+            if 'http' in text:
+                result = change_article(user_id, None, text)
+            else:
+                result = change_article(user_id, None, settings.search_template_prefix + text +
+                                        settings.search_template_postfix, True)
             return result
         except ValueError:
-            return u'Ссылка не работает, попробуйте снова'
+            return dictionary['wrong_entered_url']
     elif storage.data[user_id]['question'] == 'answer_article_id':
         return answer_article_id(storage, user_id, username, text)
+    elif storage.data[user_id]['question'] == 'answer_article_to_change_id':
+        storage.data[user_id]['state'] = 'waitForStart'
+        storage.data[user_id]['question'] = ''
+        if text == u'cancel':
+            return u'Вы отменили выбор'
+        return answer_article_to_change_id(storage, user_id, username, text)
     else:
-        return u'Хотите начать игру?\nНаберите /start_game или посмотрите /help для справки по командам'
+        return dictionary['invite_to_start']
 
 
 commands_list = {
