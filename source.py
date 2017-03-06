@@ -17,6 +17,7 @@ offset = 0
 try:
     answer_text = u'<Заготовка под ответ>'
     while True:
+        # TypeError: 'NoneType' object is not iterable
         updates = get_updates_for_bot(bot, offset)  # Если нет обновлений, вернет пустой список
         for update in updates:
             # Получаем информацию о сообщении

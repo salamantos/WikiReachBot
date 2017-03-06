@@ -50,13 +50,24 @@ def recognize_update(update_object):
     return update_id, received_user_id, received_username, received_text, request_date
 
 
-def answer(bot, send_user_id, send_answer_text='Это пустое сообщение'):
-    result = bot.send_message(send_user_id, send_answer_text).wait()
-    log_write('bot', result, sys_time())
-    try:
-        log_write('bot', send_answer_text, sys_time())
-    except Exception:
-        pass
+def answer(bot, send_user_id, send_answer_text):
+    if len(send_answer_text) == 0:
+        return
+    if type(send_answer_text) == type(u'1') or type(send_answer_text) == type('1'):
+        result = bot.send_message(send_user_id, send_answer_text).wait()
+        log_write('bot', result, sys_time())
+        # try:
+        #     log_write('bot', send_answer_text, sys_time())
+        # except Exception:
+        #     pass
+        return
+    for answer_text in send_answer_text:
+        result = bot.send_message(send_user_id, answer_text).wait()
+        log_write('bot', result, sys_time())
+        # try:
+        #     log_write('bot', answer_text, sys_time())
+        # except Exception:
+        #     pass
 
 
 def init_bot(init_token):
@@ -114,7 +125,7 @@ def init_game(user_id):
     links_list, current_article_url, header = open_link(link_to_open)
     answer = u'Вот список ссылок по статье ' + str(header) + ':\n'
     for link in links_list:
-        if link[0] > 100:
+        if link[0] > settings.max_links_count:
             break
         answer = answer + unicode(link[0]) + '. ' + link[1] + '\n'
     answer += u'\n(Вам нужно дойти до статьи\n' + storage.data[user_id]['goal_article_header'] + u')\n\nЧто выбираете?'
@@ -153,19 +164,38 @@ def answer_article_id(storage, user_id, username, text):
         link = links_list[article_id - 1]
     except ValueError:
         return 'Неверный номер'
+    except IndexError:
+        return 'Неверный номер'
 
-    new_links_list, current_article_url, link[1] = open_link(settings.url_prefix + link[2])
+    new_links_list, current_article_url, header = open_link(settings.url_prefix + link[2])
+    storage.data[user_id]['game']['links_count'] += 1
 
     # Проверка, не дошли ли еще и не закончились ли ходы
+    if header == storage.data[user_id]['goal_article_header']:
+        result = u'Поздравляю, вы победили за ' + storage.data[user_id]['game']['links_count'] + u' ходов!'
+        storage.del_user(user_id)
+        return result
 
-    storage.data[user_id]['game']['links_count'] += 1
+    if storage.data[user_id]['game']['links_count'] >= 3:
+        result = u'У вас закончились ходы, но статья ' + storage.data[user_id]['goal_article_header'] + \
+                 u' не достигнута'
+        storage.del_user(user_id)
+        return result
+
+    answer_list = []  # Список собщений для отправки
     answer = u'Вот список ссылок по статье ' + str(link[1]) + ':\n'
+    counter = 1
     for new_link in new_links_list:
-        if new_link[0] > 100:
-            break
         answer = answer + unicode(new_link[0]) + '. ' + new_link[1] + '\n'
+        if counter >= settings.max_links_count:
+            answer_list.append(answer)
+            answer = ''
+            counter = 0
+        counter += 1
+
     answer += u'\n(Вам нужно дойти до статьи\n' + storage.data[user_id]['goal_article_header'] + \
               u'\n\nУже сделано ходов: ' + str(storage.data[user_id]['game']['links_count']) + u')\n\nЧто выбираете?'
+    answer_list.append(answer)
 
     storage.data[user_id]['state'] = 'game'
     storage.data[user_id]['question'] = 'answer_article_id'
@@ -173,7 +203,7 @@ def answer_article_id(storage, user_id, username, text):
     storage.data[user_id]['game']['current_article_url'] = link[2]
     storage.data[user_id]['game']['current_article_header'] = link[1]
 
-    return answer
+    return answer_list
 
 
 # Модуль комманд бота
