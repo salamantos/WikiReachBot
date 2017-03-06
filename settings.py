@@ -2,8 +2,8 @@
 
 # Настраиваемые параметры бота
 
-bot_token = '353206446:AAEnwupmsYWkapfe3RLjRmCbJ4ZN_NNYJww'  # salamantos_first_bot
-# bot_token = '312320944:AAHRVs-an8Jy0iTl9Q5sfzwPfv8GrwKuLV4'  # WikiReachBot
+# bot_token = '353206446:AAEnwupmsYWkapfe3RLjRmCbJ4ZN_NNYJww'  # salamantos_first_bot
+bot_token = '312320944:AAHRVs-an8Jy0iTl9Q5sfzwPfv8GrwKuLV4'  # WikiReachBot
 
 url_prefix = u'https://ru.wikipedia.org'  # https://ru.wikipedia.org/wiki/Кошка
 

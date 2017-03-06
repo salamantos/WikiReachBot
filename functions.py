@@ -172,7 +172,7 @@ def answer_article_id(storage, user_id, username, text):
 
     # Проверка, не дошли ли еще и не закончились ли ходы
     if header == storage.data[user_id]['goal_article_header']:
-        result = u'Поздравляю, вы победили за ' + storage.data[user_id]['game']['links_count'] + u' ходов!'
+        result = u'Поздравляю, вы победили за ' + str(storage.data[user_id]['game']['links_count']) + u' ходов!'
         storage.del_user(user_id)
         return result
 
@@ -209,6 +209,12 @@ def answer_article_id(storage, user_id, username, text):
 # Модуль комманд бота
 # -------------------------------------------------------------------------
 # Порядок аргументов: session_continues, storage, user_id, username
+
+def c_start(session_continues, storage, user_id, username):
+    if not session_continues:
+        storage.new_user(username, user_id)
+    return u'Привет! Справка по командам: /help'
+
 
 def c_help(session_continues, storage, user_id, username):
     if not session_continues:
@@ -295,6 +301,7 @@ def understand_text(session_continues, storage, user_id, username, text):
 
 
 commands_list = {
+    '/start': c_start,
     '/help': c_help,
     '/start_game': c_start_game,
     '/end_game': c_end_game,
