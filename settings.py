@@ -27,10 +27,10 @@ keyboard = [
 
 black_list = [u'Редактировать раздел', u'Википедия', u'Ссылки на источники',
               u'(Страница отсутствует)', u'(страница отсутствует)',
-              u'Просмотр этого шаблона', u'Служебная:', u'Шаблон:', u'Увеличить']
+              u'Просмотр этого шаблона', u'Служебная:', u'Шаблон:', u'Увеличить', u'Ethnologue']
 
 dictionary = {
-    'no_text': u'(Нет текста)',
+    'no_text': u'Вы не написали текста, сударь (сударыня? o_O)',
     'non_existent_command': u'Такой команды нет :с',
     'this_is_links_list': u'Вот список ссылок по статье ',
     'your_goal_is': u'\n(Вам нужно дойти до статьи\n',
@@ -85,9 +85,8 @@ random_page_link = 'https://ru.wikipedia.org/wiki/%D0%A1%D0%BB%D1%83%D0%B6' \
                    '%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0' \
                    '%D0%BD%D0%B8%D1%86%D0%B0 '
 
-default_article_url = 'https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D1%82%D0%BB%D0%B5%D1%80,' \
-                      '_%D0%90%D0%B4%D0%BE%D0%BB%D1%8C%D1%84 '
-default_article_header = u'Гитлер, Адольф'
+default_article_url = 'https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D1%88%D0%BA%D0%B0'
+default_article_header = u'Кошка'
 
 hitler_article_url = 'https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D1%82%D0%BB%D0%B5%D1%80,' \
                      '_%D0%90%D0%B4%D0%BE%D0%BB%D1%8C%D1%84 '

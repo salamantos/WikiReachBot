@@ -70,6 +70,7 @@ def answer(bot, send_user_id, send_answer_text, reply_markup=None):
         else:
             result = bot.send_message(send_user_id, answer_text, reply_markup).wait()
         log_write('bot', result, sys_time())
+        time.sleep(0.05)
         # try:
         #     log_write('bot', answer_text, sys_time())
         # except Exception:
