@@ -66,7 +66,6 @@ dictionary = {
 /change_article - Выбрать статью, до которой нужно добраться
 /hitler_mode - REACH HITLER!
 /set_difficulty - Настроить сложность игры
-/score - Узнать статистику игр
 /open - Открыть статью в Википедии''',
     'rules': [u'''Привет!
 Правила очень простые:
@@ -81,6 +80,8 @@ dictionary = {
 P.S. Не пугайтесь, если ссылок больше 1000, это нормально))''']
 }
 
+# entities=[MessageEntity(type=u'bold', offset=0, length=3, url=None, user=None)]
+
 random_page_link = 'https://ru.wikipedia.org/wiki/%D0%A1%D0%BB%D1%83%D0%B6' \
                    '%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F:%D0%A1%D0%BB%D1%83%D1%87' \
                    '%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0' \
@@ -92,3 +93,53 @@ default_article_header = u'Кошка'
 hitler_article_url = 'https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D1%82%D0%BB%D0%B5%D1%80,' \
                      '_%D0%90%D0%B4%D0%BE%D0%BB%D1%8C%D1%84 '
 hitler_article_header = u'Гитлер, Адольф'
+
+default_article_url = hitler_article_url
+default_article_header = hitler_article_header
+
+# Error prefixes:
+# ut - update type - Если пришло не сообщение
+
+# "Update(update_id=525719033, message=Message(message_id=1687, sender=User(id=109029852, first_name=u'Matvey',
+# last_name=u'Volkov', username=u'salamantos'), date=1489183404, edit_date=None, chat=Chat(id=109029852,
+# type=u'private', title=None, username=u'salamantos', first_name=u'Matvey', last_name=u'Volkov'), forward_from=User(
+# id=93372553, first_name=u'BotFather', last_name=None, username=u'BotFather'), forward_from_chat=None,
+# forward_date=1488892912, reply_to_message=None, text=u"I can help you create and manage Telegram bots. If you're
+# new to the Bot API, please see the manual.\n\nYou can control me by sending these commands:\n\n/newbot - create a
+# new bot\n/mybots - edit your bots [beta]\n/mygames - edit your games [beta]\n\nEdit Bots\n/setname - change a bot's
+#  name\n/setdescription - change bot description\n/setabouttext - change bot about info\n/setuserpic - change bot
+# profile photo\n/setcommands - change the list of commands\n/deletebot - delete a bot\n\nBot Settings\n/token -
+# generate authorization token\n/revoke - revoke bot access token\n/setinline - toggle inline mode\n/setinlinegeo -
+# toggle inline location requests\n/setinlinefeedback - change inline feedback settings\n/setjoingroups - can your
+# bot be added to groups?\n/setprivacy - toggle privacy mode in groups\n\nGames\n/newgame - create a new
+# game\n/listgames - get a list of your games\n/editgame - edit a game\n/deletegame - delete an existing game",
+# entities=[MessageEntity(type=u'text_link', offset=85, length=14, url=u'https://core.telegram.org/bots', user=None),
+#  MessageEntity(type=u'bot_command', offset=149, length=7, url=None, user=None), MessageEntity(type=u'bot_command',
+# offset=176, length=7, url=None, user=None), MessageEntity(type=u'bold', offset=201, length=6, url=None, user=None),
+#  MessageEntity(type=u'bot_command', offset=208, length=8, url=None, user=None), MessageEntity(type=u'text_link',
+# offset=229, length=5, url=u'https://core.telegram.org/bots/games', user=None), MessageEntity(type=u'bold',
+# offset=235, length=6, url=None, user=None), MessageEntity(type=u'bold', offset=243, length=9, url=None, user=None),
+#  MessageEntity(type=u'bot_command', offset=253, length=8, url=None, user=None), MessageEntity(type=u'bot_command',
+# offset=284, length=15, url=None, user=None), MessageEntity(type=u'bot_command', offset=325, length=13, url=None,
+# user=None), MessageEntity(type=u'bot_command', offset=363, length=11, url=None, user=None), MessageEntity(
+# type=u'bot_command', offset=402, length=12, url=None, user=None), MessageEntity(type=u'bot_command', offset=445,
+# length=10, url=None, user=None), MessageEntity(type=u'bold', offset=472, length=12, url=None, user=None),
+# MessageEntity(type=u'bot_command', offset=485, length=6, url=None, user=None), MessageEntity(type=u'bot_command',
+# offset=523, length=7, url=None, user=None), MessageEntity(type=u'bot_command', offset=557, length=10, url=None,
+# user=None), MessageEntity(type=u'text_link', offset=577, length=11, url=u'https://core.telegram.org/bots/inline',
+# user=None), MessageEntity(type=u'bot_command', offset=589, length=13, url=None, user=None), MessageEntity(
+# type=u'text_link', offset=619, length=17, url=u'https://core.telegram.org/bots/inline#location-based-results',
+# user=None), MessageEntity(type=u'bot_command', offset=637, length=18, url=None, user=None), MessageEntity(
+# type=u'text_link', offset=665, length=15, url=u'https://core.telegram.org/bots/inline#collecting-feedback',
+# user=None), MessageEntity(type=u'bot_command', offset=690, length=14, url=None, user=None), MessageEntity(
+# type=u'bot_command', offset=740, length=11, url=None, user=None), MessageEntity(type=u'text_link', offset=761,
+# length=12, url=u'https://core.telegram.org/bots#privacy-mode', user=None), MessageEntity(type=u'bold', offset=785,
+# length=5, url=None, user=None), MessageEntity(type=u'bot_command', offset=791, length=8, url=None, user=None),
+# MessageEntity(type=u'text_link', offset=815, length=4, url=u'https://core.telegram.org/bots/games', user=None),
+# MessageEntity(type=u'bot_command', offset=820, length=10, url=None, user=None), MessageEntity(type=u'bot_command',
+# offset=858, length=9, url=None, user=None), MessageEntity(type=u'bot_command', offset=882, length=11, url=None,
+# user=None)], audio=None, document=None, photo=None, sticker=None, video=None, voice=None, caption=None,
+# contact=None, location=None, venue=None, new_chat_member=None, left_chat_member=None, new_chat_title=None,
+# new_chat_photo=None, delete_chat_photo=None, group_chat_created=None, supergroup_chat_created=None,
+# channel_chat_created=None, migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None),
+# edited_message=None, inline_query=None, chosen_inline_result=None, callback_query=None)"

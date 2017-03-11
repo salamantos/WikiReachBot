@@ -2,32 +2,60 @@
 
 import time
 import re
-from functions import sys_time, log_write, write_bot_name, recognize_update, get_updates_for_bot, commands_list, \
+from functions import sys_time, log_write, write_bot_name, extract_update_info, get_updates_for_bot, commands_list, \
     answer, log_file, init_bot, understand_text
 from storage import Storage
 import settings
 from settings import dictionary
 
 # Включение бота
+reset_messages = raw_input('Reset messages? y/n\n')
+if reset_messages == 'y':
+    reset_messages = True
+else:
+    reset_messages = False
 log_write('sys', '------------- Начало сеанса -------------', sys_time())
 bot = init_bot(settings.bot_token)
-write_bot_name(bot)
+error = write_bot_name(bot)
+if not error:
+    print 'successfully'
+else:
+    print error
+    exit(0)
 storage = Storage()
+offset = 0
+
+# Пропускаем пропущенные сообщения и выводим сообщение об этом пользователям
+if reset_messages:
+    updates = get_updates_for_bot(bot, offset)
+    if updates:
+        reset_file = open('logs/reset_file.txt', 'a')
+        reset_file.write(str(updates))
+        reset_file.close()
+        offset = updates[-1].update_id + 1
 
 # log_file.close()  # Fix it!
 
-print 'successfully'
+if not error:
+    print 'successfully'
+else:
+    print error
+
 # Запуск прослушки Телеграма
-offset = 0
+
+# error = ''
 try:
     answer_text = u'<Заготовка под ответ>'
     reply_markup = None
     while True:
-        # TypeError: 'NoneType' object is not iterable
         updates = get_updates_for_bot(bot, offset)  # Если нет обновлений, вернет пустой список
         for update in updates:
             # Получаем информацию о сообщении
-            offset, user_id, chat_id, username, text, message_date = recognize_update(update)
+            error, offset, user_id, chat_id, username, text, message_date = extract_update_info(update)
+            if error != '':
+                offset += 1
+                print error
+                continue
             give_answer = False  # Готов ли ответ
 
             # Если не текстовое сообщение
@@ -50,13 +78,13 @@ try:
                         text = re.sub(r'@WikiReachBot', '', text)
                     if '/answer' in text:
                         text = re.sub(r'/answer ', '', text)
-                        answer_text, reply_markup = commands_list['/answer'](user_id in storage.data, storage,
-                                                                             user_id, username, text)
+                        error, answer_text, reply_markup = commands_list['/answer'](user_id in storage.data, storage,
+                                                                                    user_id, username, text)
                         give_answer = True
 
                     if not give_answer:
-                        answer_text, reply_markup = commands_list.get(text)(user_id in storage.data, storage, user_id,
-                                                                            username)
+                        error, answer_text, reply_markup = commands_list.get(text)(user_id in storage.data, storage,
+                                                                                   user_id, username)
 
                 except TypeError:
                     answer_text = dictionary['non_existent_command']
@@ -64,11 +92,16 @@ try:
 
             # Если текстовый запрос, пытаемся понять его
             if not give_answer:
-                answer_text, reply_markup = understand_text(user_id in storage.data, storage, user_id, username, text)
-
+                error, answer_text, reply_markup = understand_text(user_id in storage.data, storage,
+                                                                   user_id, username, text)
                 give_answer = True
 
-            answer(bot, chat_id, answer_text, reply_markup)
+            if error == '' or error == 'Wrong url':
+                answer(bot, chat_id, answer_text, reply_markup)
+            else:
+                print "err: "
+                print error
+
             offset += 1  # id следующего обновления
         time.sleep(0.01)
 
