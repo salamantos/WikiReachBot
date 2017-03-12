@@ -12,6 +12,9 @@ search_template_postfix = u'&title=%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0
 
 max_links_count = 100
 
+timeout_personal_messages = 1.5  # seconds
+big_timeout_personal_messages = 25
+
 default_difficulty = 4
 
 difficulty_list = {
@@ -36,7 +39,7 @@ dictionary = {
     'your_goal_is': u'\n(Вам нужно дойти до статьи\n',
     'what_you_want_to_choose': u')\n\nНапишите номер выбранной ссылки',
     'goal_article_was_changed': u'Целевая статья успешно изменена на ',
-    'enter_article_link': u'Введите ссылку на статью',
+    'enter_article_link': u'Введите ссылку на статью или её название',
     'congratulations': u'Поздравляю, вы победили за ',
     'steps': u' ходов!',
     'no_more_steps': u'У вас закончились ходы, но статья ',

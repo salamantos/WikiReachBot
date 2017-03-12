@@ -154,4 +154,5 @@ class Storage:
         self.db.close()
 
     def del_user(self, user_id):
-        del (self.data[user_id])
+        # del (self.data[user_id])
+        self.new_user(self, user_id)

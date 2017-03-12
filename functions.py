@@ -62,34 +62,88 @@ def extract_update_info(update_object):
     return error, update_id, received_user_id, chat_id, received_username, received_text, request_date
 
 
-def answer_send_message(bot, send_user_id, send_answer_text, reply_markup):
+def send_answer_from_queue(storage, bot, send_user_id, chat_id, send_answer_text, reply_markup):
+    error = ''
+
     if reply_markup is None:
-        result = bot.send_message(send_user_id, send_answer_text).wait()
-    else:
-        result = bot.send_message(send_user_id, send_answer_text, reply_markup=reply_markup).wait()
-    if isinstance(result, Error):
-        # Пытаемся снова
+        result = bot.send_message(chat_id, send_answer_text).wait()
         print 1
-        time.sleep(5)
+        log_write('bot', result, sys_time())
+    else:
+        result = bot.send_message(chat_id, send_answer_text, reply_markup=reply_markup).wait()
         print 2
-        return answer_send_message(bot, send_user_id, send_answer_text, reply_markup)
-    return result
-
-
-def answer(bot, send_user_id, send_answer_text, reply_markup=None):
-    if len(send_answer_text) == 0:
-        return
-    # Если строка
-    if isinstance(send_answer_text, unicode) or isinstance(send_answer_text, str):
-        result = answer_send_message(bot, send_user_id, send_answer_text, reply_markup)
         log_write('bot', result, sys_time())
-        return
-    # Иначе, если список строк
-    for answer_text in send_answer_text:
-        result = answer_send_message(bot, send_user_id, answer_text, reply_markup)
+    error += storage.modify_local_storage(send_user_id,
+                                          last_message_sent=sys_time()
+                                          )
+    if isinstance(result, Error):
+        # Пытаемся снова через больший промежуток времени
+        error += storage.modify_local_storage(send_user_id,
+                                              last_message_sent=sys_time() + settings.big_timeout_personal_messages
+                                              )
+        print 5
+        return error, False
 
-        log_write('bot', result, sys_time())
-        time.sleep(0.05)
+    return error, True
+
+
+def answer(storage, bot, send_user_id, chat_id, send_answer_text, reply_markup=None):
+    # С пустой строкой ответа просто отправляет данные из очереди
+    class Queue:
+        def __init__(self):
+            self.items = []
+
+        def is_empty(self):
+            return self.items == []
+
+        def enqueue(self, item):
+            self.items.insert(0, item)
+
+        def dequeue(self):
+            return self.items.pop()
+
+        def size(self):
+            return len(self.items)
+
+    error = ''
+
+    # При первом вызове функции заводим очередь
+    try:
+        answer.queue.is_empty()
+    except AttributeError:
+        answer.queue = Queue()
+
+    # Добавляем сообщения в очередь
+    if len(send_answer_text) != 0:
+        # Если строка
+        if isinstance(send_answer_text, unicode) or isinstance(send_answer_text, str):
+            answer.queue.enqueue((send_user_id, chat_id, send_answer_text, reply_markup))
+        # Иначе, если список строк
+        else:
+            for answer_text in send_answer_text:
+                answer.queue.enqueue((send_user_id, chat_id, answer_text, reply_markup))
+
+    temp_queue = Queue()
+    users_skip_list = []
+    try:
+        while not answer.queue.is_empty():
+            send_user_id, chat_id, send_answer_text, reply_markup = answer.queue.dequeue()
+            if (sys_time() - storage.data[send_user_id]['last_message_sent'] > settings.timeout_personal_messages) \
+                    and send_user_id not in users_skip_list:
+                error_get, success = send_answer_from_queue(storage, bot, send_user_id, chat_id, send_answer_text, reply_markup)
+                error += error_get
+                if success:
+                    continue
+            if send_user_id not in users_skip_list:
+                users_skip_list.append(send_user_id)
+            temp_queue.enqueue((send_user_id, chat_id, send_answer_text, reply_markup))
+
+        while not temp_queue.is_empty():
+            answer.queue.enqueue((temp_queue.dequeue()))
+    except KeyError:
+        error += 'KeyError'
+
+    return error
 
 
 def init_bot(init_token):
@@ -130,7 +184,7 @@ def open_url(url):
 
         soup = soup.find(id="mw-content-text")
         a = soup.find_all('a')
-    except AttributeError:
+    except Exception:  # AttributeError:
         return 'Wrong url', [], '', ''
 
     result = []
@@ -292,8 +346,8 @@ def answer_article_id(storage, user_id, text):
         counter += 1
 
     answer_text += dictionary['your_goal_is'] + storage.data[user_id]['goal_article_header'] + \
-        dictionary['steps_made'] + str(storage.data[user_id]['game']['links_count']) + \
-        dictionary['what_you_want_to_choose']
+                   dictionary['steps_made'] + str(storage.data[user_id]['game']['links_count']) + \
+                   dictionary['what_you_want_to_choose']
     answer_list.append(answer_text)
 
     storage.data[user_id]['game']['links_list'] = new_links_list
@@ -492,9 +546,9 @@ def c_open(session_continues, storage, user_id, username):
 
 def c_answer(session_continues, storage, user_id, username, text):
     error = ''
-    error_get, answer_text = understand_text(session_continues, storage, user_id, username, text)
+    error_get, answer_text, reply_markup = understand_text(session_continues, storage, user_id, username, text)
     error += error_get
-    return error, answer_text, None
+    return error, answer_text, reply_markup
 
 
 def understand_text(session_continues, storage, user_id, username, text):
