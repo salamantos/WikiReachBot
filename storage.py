@@ -28,7 +28,9 @@ class Storage:
             'temp_data': '',
             'goal_article_url': settings.default_article_url,
             'goal_article_header': settings.default_article_header,
-            'difficulty': settings.default_difficulty
+            'difficulty': settings.default_difficulty,
+            'games_count': 0,
+            'games_won': 0
         }
 
         self.db_sync_download(user_id)
@@ -55,7 +57,8 @@ class Storage:
         error = self.db_sync_upload(user_id)
         return error
 
-    def db_sync_upload(self, user_id):
+    def db_sync_upload(self, user_id, games_won=None):
+        # Количество выигранных/проигранных игр обновляется отдельно от остальных данных!!!
         error = ''
         try:
             if user_id not in self.data:
@@ -81,26 +84,36 @@ class Storage:
                     self.db.commit()
                     return error
 
-            sql = """UPDATE user_storage
-                     SET
-                     username = '%(username)s',
-                     goal_article_url = '%(goal_article_url)s',
-                     goal_article_header = '%(goal_article_header)s',
-                     difficulty = '%(difficulty)s'
-                     WHERE user_id = '%(user_id)s'
-                  """ % {"user_id": user_id,
-                         "username": self.data[user_id]['username'],
-                         "goal_article_url": self.data[user_id]['goal_article_url'],
-                         "goal_article_header": self.data[user_id]['goal_article_header'],
-                         "difficulty": self.data[user_id]['difficulty']
-                         }
+            if games_won is not None:
+                self.data[user_id]['games_count'] += 1
+                if games_won:
+                    self.data[user_id]['games_won'] += 1
+                    sql = """UPDATE user_storage SET
+                                         games_count = games_count + 1,
+                                         games_won = games_won + 1"""
+                else:
+                    sql = 'UPDATE user_storage SET games_count = games_count + 1'
+            else:
+                sql = """UPDATE user_storage
+                                     SET
+                                     username = '%(username)s',
+                                     goal_article_url = '%(goal_article_url)s',
+                                     goal_article_header = '%(goal_article_header)s',
+                                     difficulty = '%(difficulty)s'
+                                     WHERE user_id = '%(user_id)s'
+                                  """ % {"user_id": user_id,
+                                         "username": self.data[user_id]['username'],
+                                         "goal_article_url": self.data[user_id]['goal_article_url'],
+                                         "goal_article_header": self.data[user_id]['goal_article_header'],
+                                         "difficulty": self.data[user_id]['difficulty']
+                                         }
             # Проверяем соединение и переподключаемся, если нужно
             self.db.ping(True)
             # Исполняем SQL-запрос
             self.cursor.execute(sql)
             # Применяем изменения к базе данных
             self.db.commit()
-        except ZeroDivisionError: #  (AttributeError, MySQLdb.OperationalError):
+        except ZeroDivisionError:  # (AttributeError, MySQLdb.OperationalError):
             error = 'DB connection error'
             print error
         return error
@@ -145,6 +158,8 @@ class Storage:
             self.data[user_id]['goal_article_url'] = result[0][3]
             self.data[user_id]['goal_article_header'] = result[0][4]
             self.data[user_id]['difficulty'] = result[0][5]
+            self.data[user_id]['games_count'] = result[0][6]
+            self.data[user_id]['games_won'] = result[0][7]
         except (AttributeError, MySQLdb.OperationalError):
             error = 'DB connection error'
             print error

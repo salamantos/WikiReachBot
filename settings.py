@@ -11,6 +11,8 @@ search_template_postfix = u'&title=%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0
                           u'%D0%BA&go=%D0%9F%D0%B5%D1%80%D0%B5%D0%B9%D1%82%D0%B8 '
 
 max_links_count = 100
+max_messages_count = 5  # Если 5 или меньше, выводим полностью
+split_messages_count = 3  # Если больше max_messages_count, выводим первые 3 и мпрашиваем, нужно ли еще
 
 timeout_personal_messages = 1.5  # seconds
 big_timeout_personal_messages = 25
@@ -39,7 +41,7 @@ dictionary = {
     'your_goal_is': u'\n(Вам нужно дойти до статьи\n',
     'what_you_want_to_choose': u')\n\nНапишите номер выбранной ссылки',
     'goal_article_was_changed': u'Целевая статья успешно изменена на ',
-    'enter_article_link': u'Введите ссылку на статью или её название',
+    'enter_article_link': u'Введите название статьи или ссылку на неё',
     'congratulations': u'Поздравляю, вы победили за ',
     'steps': u' ходов!',
     'no_more_steps': u'У вас закончились ходы, но статья ',

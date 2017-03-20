@@ -1,213 +1,17 @@
 # coding: utf8
 
-import sys
-import time
-from twx.botapi import TelegramBot, ReplyKeyboardMarkup, Error
-from bs4 import BeautifulSoup
-import urllib2
-
-import settings
+from Wiki_requests import *
+from twx.botapi import ReplyKeyboardMarkup
 from settings import dictionary
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
 
-# Модуль логов
-# -------------------------------------------------------------------------
-def sys_time():
-    return time.time()
-
-
-def log_write(scenario, action, log_time, user='', log_user_id=''):
-    tuple_time = time.gmtime(log_time)
-    # log_time = int(log_time)
-    res_time = time.strftime('%Y-%m-%d %H:%M:%S', tuple_time)
-    if scenario == 'usr':
-        log_file.write(
-            str(res_time) + ': @' + str(user) + ' (' + str(log_user_id) + ') написал: "' + str(action) + '"\n')
-    elif scenario == 'bot':
-        log_file.write(
-            str(res_time) + ': ---> @' + str(user) + ' (' + str(log_user_id) + ') бот ответил: "' + str(action) +
-            '"\n')
-    elif scenario == 'sys':
-        log_file.write(str(res_time) + ': ' + str(action) + '\n')
-    elif scenario == 'endl':
-        log_file.write('\n')
-
-
-# Модуль запросов к Телеграму
-# -------------------------------------------------------------------------
-def extract_update_info(update_object):
-    error = ''
-    if update_object.edited_message is not None:
-        error += 'ut Edited message'
-    elif update_object.message is None:
-        error += 'ut None message'
-    elif update_object.message.new_chat_member is not None or update_object.message.left_chat_member is not None:
-        error += 'ut User join/left'
-
-    if error != '':
-        return error, update_object.update_id, 0, 0, u'', u'', 0
-
-    # try AttributeError
-    update_id = update_object.update_id
-    received_user_id = update_object.message.sender.id
-    received_username = update_object.message.sender.username
-    chat_id = update_object.message.chat.id
-    # chat_type = update_object.message.chat.type  # Пока работаем с приватным, проверить
-    request_date = update_object.message.date
-    received_text = update_object.message.text
-
-    return error, update_id, received_user_id, chat_id, received_username, received_text, request_date
-
-
-def send_answer_from_queue(storage, bot, send_user_id, chat_id, send_answer_text, reply_markup):
-    error = ''
-
-    if reply_markup is None:
-        result = bot.send_message(chat_id, send_answer_text).wait()
-        print 1
-        log_write('bot', result, sys_time())
-    else:
-        result = bot.send_message(chat_id, send_answer_text, reply_markup=reply_markup).wait()
-        print 2
-        log_write('bot', result, sys_time())
-    error += storage.modify_local_storage(send_user_id,
-                                          last_message_sent=sys_time()
-                                          )
-    if isinstance(result, Error):
-        # Пытаемся снова через больший промежуток времени
-        error += storage.modify_local_storage(send_user_id,
-                                              last_message_sent=sys_time() + settings.big_timeout_personal_messages
-                                              )
-        print 5
-        return error, False
-
-    return error, True
-
-
-def answer(storage, bot, send_user_id, chat_id, send_answer_text, reply_markup=None):
-    # С пустой строкой ответа просто отправляет данные из очереди
-    class Queue:
-        def __init__(self):
-            self.items = []
-
-        def is_empty(self):
-            return self.items == []
-
-        def enqueue(self, item):
-            self.items.insert(0, item)
-
-        def dequeue(self):
-            return self.items.pop()
-
-        def size(self):
-            return len(self.items)
-
-    error = ''
-
-    # При первом вызове функции заводим очередь
-    try:
-        answer.queue.is_empty()
-    except AttributeError:
-        answer.queue = Queue()
-
-    # Добавляем сообщения в очередь
-    if len(send_answer_text) != 0:
-        # Если строка
-        if isinstance(send_answer_text, unicode) or isinstance(send_answer_text, str):
-            answer.queue.enqueue((send_user_id, chat_id, send_answer_text, reply_markup))
-        # Иначе, если список строк
-        else:
-            for answer_text in send_answer_text:
-                answer.queue.enqueue((send_user_id, chat_id, answer_text, reply_markup))
-
-    temp_queue = Queue()
-    users_skip_list = []
-    try:
-        while not answer.queue.is_empty():
-            send_user_id, chat_id, send_answer_text, reply_markup = answer.queue.dequeue()
-            if (sys_time() - storage.data[send_user_id]['last_message_sent'] > settings.timeout_personal_messages) \
-                    and send_user_id not in users_skip_list:
-                error_get, success = send_answer_from_queue(storage, bot, send_user_id, chat_id, send_answer_text, reply_markup)
-                error += error_get
-                if success:
-                    continue
-            if send_user_id not in users_skip_list:
-                users_skip_list.append(send_user_id)
-            temp_queue.enqueue((send_user_id, chat_id, send_answer_text, reply_markup))
-
-        while not temp_queue.is_empty():
-            answer.queue.enqueue((temp_queue.dequeue()))
-    except KeyError:
-        error += 'KeyError'
-
-    return error
-
-
-def init_bot(init_token):
-    bot = TelegramBot(init_token)
-    bot.update_bot_info().wait()
-    return bot
-
-
-def write_bot_name(bot):
-    try:
-        log_write('sys', bot.username + '\n', sys_time())
-        return ''
-    except TypeError:
-        return 'No internet connection'
-
-
-def get_updates_for_bot(bot, offset):
-    result = bot.get_updates(offset).wait()
-    if result is None:
-        result = []
-    return result
-
-
-# Модуль запросов к Википедии
-# -------------------------------------------------------------------------
-
-def open_url(url):
-    try:
-        response = urllib2.urlopen(url)
-        html = response.read()
-        soup = BeautifulSoup(html, 'html.parser')
-
-        # Достаем данные о текущей статье
-        current_page_link = soup.find(rel="canonical").get('href')
-        current_page_header = soup.find(id="firstHeading").get_text()
-        print('Current Link is ' + current_page_link)
-        print('Current Page is ' + str(current_page_header).decode('utf-8') + '\n')
-
-        soup = soup.find(id="mw-content-text")
-        a = soup.find_all('a')
-    except Exception:  # AttributeError:
-        return 'Wrong url', [], '', ''
-
-    result = []
-    link_id = 1
-    for link in a:
-        try:
-            href = link.get('href')
-            title = link.get('title')
-            # inner_html = link.get_text()
-
-            if not ('https' in href) and not (title is None):
-                next_link = False
-                for black_word in settings.black_list:
-                    if black_word in title:
-                        next_link = True
-                    if 'img' in str(link):
-                        next_link = True
-                if not next_link:
-                    result.append([link_id, title, href])
-                    link_id += 1
-        except TypeError:
-            log_write('sys', 'EMPTY HREF!!!', sys_time())  # Не происходит из-за проверки not (title is None)
-    return '', result, current_page_link, current_page_header
+# Модуль комманд бота
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 
 def form_answer_from_links_list(answer_text, new_links_list, postfix_answer_text):
@@ -262,7 +66,7 @@ def change_article(storage, user_id, article_header, article_url, searching=Fals
 
         if 'search' in current_article_url:
             answer_list = form_answer_from_links_list(u'Найденные статьи:\n', new_links_list,
-                                                      u'\n\nВыберите нужную или наберите cancel для отмены')
+                                                      u'\nВыберите нужную или наберите cancel для отмены')
 
             error += storage.modify_local_storage(user_id,
                                                   state='waitForCommandAnswer',
@@ -325,12 +129,14 @@ def answer_article_id(storage, user_id, text):
     if header == storage.data[user_id]['goal_article_header']:
         result = dictionary['congratulations'] + str(storage.data[user_id]['game']['links_count']) + \
                  dictionary['steps']
+        error += storage.db_sync_upload(user_id, games_won=True)
         storage.del_user(user_id)
         return error, result
 
     if storage.data[user_id]['game']['links_count'] >= storage.data[user_id]['difficulty']:
         result = dictionary['no_more_steps'] + storage.data[user_id]['goal_article_header'] + \
                  dictionary['not_reached']
+        error += storage.db_sync_upload(user_id, games_won=False)
         storage.del_user(user_id)
         return error, result
 
@@ -427,9 +233,14 @@ def open_link_by_id(storage, user_id, text):
     return '', answer_text
 
 
-# Модуль комманд бота
-# -------------------------------------------------------------------------
-# Порядок аргументов: session_continues, storage, user_id, username
+def get_score(storage, user_id):
+    return '', storage.data[user_id]['games_count'], storage.data[user_id]['games_won']
+
+
+# Парсинг комманд
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 def c_start(session_continues, storage, user_id, username):
     if not session_continues:
@@ -475,7 +286,8 @@ def c_end_game(session_continues, storage, user_id, username):
 
     if storage.data[user_id]['state'] == 'game':
         storage.del_user(user_id)
-        return '', dictionary['game_stopped'], None
+        error = storage.db_sync_upload(user_id, games_won=False)
+        return error, dictionary['game_stopped'], None
     else:
         return '', dictionary['you_not_play'], None
 
@@ -525,8 +337,9 @@ def c_set_difficulty(session_continues, storage, user_id, username):
 def c_score(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
+    error, games_count, games_won = get_score(storage, user_id)
 
-    return '', 'get_score()', None  # Сделать возврат ошибки из grt_score()
+    return error, u'Игр сыграно: ' + unicode(games_count) + u'\nВы победили в ' + unicode(games_won) + u' из них', None
 
 
 def c_open(session_continues, storage, user_id, username):
@@ -606,8 +419,3 @@ commands_list = {
     '/score': c_score,
     '/open': c_open
 }
-
-# Модуль инициализации переменных
-# -------------------------------------------------------------------------
-
-log_file = open('logs/logs.txt', 'a')

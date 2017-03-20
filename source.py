@@ -1,12 +1,10 @@
 # coding=utf-8
 
-import time
 import re
-from functions import sys_time, log_write, write_bot_name, extract_update_info, get_updates_for_bot, commands_list, \
-    answer, log_file, init_bot, understand_text
+from bot_commands import commands_list, understand_text
 from storage import Storage
-import settings
 from settings import dictionary
+from Telegram_requests import *
 
 # Включение бота
 reset_messages = raw_input('Reset messages? y/n\n')
@@ -14,9 +12,11 @@ if reset_messages == 'y':
     reset_messages = True
 else:
     reset_messages = False
-log_write('sys', '------------- Начало сеанса -------------', sys_time())
+
+log_file = open('logs/logs.txt', 'a')
+log_write(log_file, 'sys', '------------- Начало сеанса -------------', sys_time())
 bot = init_bot(settings.bot_token)
-error = write_bot_name(bot)
+error = write_bot_name(log_file, bot)
 if not error:
     print 'successfully'
 else:
@@ -41,6 +41,9 @@ if not error:
 else:
     print error
     error = ''
+
+# result = bot.send_message(311155161, u'Хочешь поиграть?)').wait()
+# result = bot.send_message(109029852, u'Хочешь поиграть?)').wait()
 
 # Запуск прослушки Телеграма
 
@@ -69,10 +72,10 @@ try:
 
             # Логи
             try:
-                log_write('usr', update, message_date, username, user_id)
-                log_write('usr', text.encode('utf-8'), message_date, username, user_id)
+                log_write(log_file, 'usr', update, message_date, username, user_id)
+                log_write(log_file, 'usr', text.encode('utf-8'), message_date, username, user_id)
             except UnicodeError:
-                log_write('usr', 'UnicodeError', message_date, username, user_id)
+                log_write(log_file, 'usr', 'UnicodeError', message_date, username, user_id)
 
             # Если получили комманду
             if text[0] == '/' and not give_answer:
@@ -81,43 +84,46 @@ try:
                         text = re.sub(r'@WikiReachBot', '', text)
                     if '/answer' in text:
                         text = re.sub(r'/answer ', '', text)
-                        error_get, answer_text, reply_markup = commands_list['/answer'](user_id in storage.data, storage,
-                                                                                    user_id, username, text)
+                        error_get, answer_text, reply_markup = commands_list['/answer'](user_id in storage.data,
+                                                                                        storage,
+                                                                                        user_id, username, text)
                         error += error_get
                         give_answer = True
 
                     if not give_answer:
                         error_get, answer_text, reply_markup = commands_list.get(text)(user_id in storage.data, storage,
-                                                                                   user_id, username)
+                                                                                       user_id, username)
                         error += error_get
 
                 except TypeError:
+                    if user_id not in storage.data:
+                        storage.new_user(username, user_id)
                     answer_text = dictionary['non_existent_command']
                 give_answer = True
 
             # Если текстовый запрос, пытаемся понять его
             if not give_answer:
                 error_get, answer_text, reply_markup = understand_text(user_id in storage.data, storage,
-                                                                   user_id, username, text)
+                                                                       user_id, username, text)
                 error += error_get
                 give_answer = True
 
             if error == '' or 'Wrong url' in error:
-                error += answer(storage, bot, user_id, chat_id, answer_text, reply_markup)
+                error += answer(log_file, storage, bot, user_id, chat_id, answer_text, reply_markup)
             else:
                 print "err: "
                 print error
                 error = ''
 
             offset += 1  # id следующего обновления
-        error += answer(storage, bot, 0, 0, '', None)
+        error += answer(log_file, storage, bot, 0, 0, '', None)
         time.sleep(0.01)
 
 except KeyboardInterrupt:
-    log_write('endl', '', sys_time())
-    log_write('sys', 'Бот остановлен.', sys_time())
+    log_write(log_file, 'endl', '', sys_time())
+    log_write(log_file, 'sys', 'Бот остановлен.', sys_time())
 # except:
 #     log_write('Неизвестная ошибка')
 finally:
-    log_write('sys', '------------- Конец сеанса --------------\n\n\n', sys_time())
-    log_file.close()  # Fix it!
+    log_write(log_file, 'sys', '------------- Конец сеанса --------------\n\n\n', sys_time())
+    log_file.close()
