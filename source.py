@@ -25,7 +25,7 @@ else:
 storage = Storage()
 offset = 0
 
-# Пропускаем пропущенные сообщения и выводим сообщение об этом пользователям
+# Пропускаем пропущенные сообщения
 if reset_messages:
     updates = get_updates_for_bot(bot, offset)
     if updates:
@@ -42,12 +42,7 @@ else:
     print error
     error = ''
 
-# result = bot.send_message(311155161, u'Хочешь поиграть?)').wait()
-# result = bot.send_message(109029852, u'Хочешь поиграть?)').wait()
-
 # Запуск прослушки Телеграма
-
-# error = ''
 try:
     answer_text = u'<Заготовка под ответ>'
     reply_markup = None
@@ -127,3 +122,4 @@ except KeyboardInterrupt:
 finally:
     log_write(log_file, 'sys', '------------- Конец сеанса --------------\n\n\n', sys_time())
     log_file.close()
+    storage.close_db()

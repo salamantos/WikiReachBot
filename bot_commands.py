@@ -14,6 +14,7 @@ sys.setdefaultencoding('utf8')
 # ----------------------------------------------------------------------------------------------------------------------
 
 
+# Формируем ответ из полученного списка ссылок
 def form_answer_from_links_list(answer_text, new_links_list, postfix_answer_text):
     answer_list = []  # Список собщений для отправки
     counter = 1
@@ -30,14 +31,12 @@ def form_answer_from_links_list(answer_text, new_links_list, postfix_answer_text
     return answer_list
 
 
+# Начало игры
 def init_game(storage, user_id):
     error = ''
     link_to_open = settings.random_page_link
     error_get, links_list, current_article_url, header = open_url(link_to_open)
     error += error_get
-    # if error != '':
-    #     error += 'Wrong url'
-    #     return error, 'Wrong url'
 
     answer_list = form_answer_from_links_list(dictionary['this_is_links_list'] + str(header) + ':\n', links_list,
                                               dictionary['your_goal_is'] + storage.data[user_id][
@@ -55,8 +54,10 @@ def init_game(storage, user_id):
     return error, answer_list
 
 
+# Вызывается при наборе команды смены статьи
 def change_article(storage, user_id, article_header, article_url, searching=False):
     error = ''
+    # Если нужен поис по Википедии
     if searching:
         error_get, new_links_list, current_article_url, header = open_url(article_url)
         error += error_get
@@ -65,8 +66,8 @@ def change_article(storage, user_id, article_header, article_url, searching=Fals
             return error, 'Wrong url'
 
         if 'search' in current_article_url:
-            answer_list = form_answer_from_links_list(u'Найденные статьи:\n', new_links_list,
-                                                      u'\nВыберите нужную или наберите cancel для отмены')
+            answer_list = form_answer_from_links_list(dictionary['articles_found'], new_links_list,
+                                                      dictionary['select_article_or_cancel'])
 
             error += storage.modify_local_storage(user_id,
                                                   state='waitForCommandAnswer',
@@ -78,6 +79,7 @@ def change_article(storage, user_id, article_header, article_url, searching=Fals
             article_header = header
             article_url = current_article_url
 
+    # Если известна вся информация о статье
     if article_header is not None and article_url is not None:
         error += storage.modify_local_storage(user_id,
                                               state='waitForStart',
@@ -107,6 +109,23 @@ def change_article(storage, user_id, article_header, article_url, searching=Fals
         return error, dictionary['enter_article_link']
 
 
+# Вызывается при выборе статьи из предложенного результата поиска
+def answer_article_to_change_id(storage, user_id, text):
+    try:
+        article_id = int(text)
+        links_list = storage.data[user_id]['temp_data']
+        link = links_list[article_id - 1]
+    except ValueError:
+        return '', dictionary['wrong_id']
+    except IndexError:
+        return '', dictionary['wrong_id']
+
+    new_links_list, current_article_url, header = open_url(settings.url_prefix + link[2])
+    result = change_article(storage, user_id, header, settings.url_prefix + current_article_url)
+    return '', result
+
+
+# Вызывается при переходе на другую статью во время игры
 def answer_article_id(storage, user_id, text):
     error = ''
     try:
@@ -168,21 +187,7 @@ def answer_article_id(storage, user_id, text):
     return error, answer_list
 
 
-def answer_article_to_change_id(storage, user_id, text):
-    try:
-        article_id = int(text)
-        links_list = storage.data[user_id]['temp_data']
-        link = links_list[article_id - 1]
-    except ValueError:
-        return '', dictionary['wrong_id']
-    except IndexError:
-        return '', dictionary['wrong_id']
-
-    new_links_list, current_article_url, header = open_url(settings.url_prefix + link[2])
-    result = change_article(storage, user_id, header, settings.url_prefix + current_article_url)
-    return '', result
-
-
+# Смена сложности игры
 def set_difficulty(storage, user_id):
     reply_markup = ReplyKeyboardMarkup.create(settings.keyboard, one_time_keyboard=True)
 
@@ -194,6 +199,7 @@ def set_difficulty(storage, user_id):
     return '', dictionary['select_difficulty'], reply_markup
 
 
+# Ответ на запрос о смене сложности
 def answer_difficulty(storage, user_id, text):
     error = ''
     if text == u'Отмена':
@@ -214,6 +220,7 @@ def answer_difficulty(storage, user_id, text):
         return error, dictionary['wrong_entered_difficulty'], reply_markup
 
 
+# Выдает ссылку на статью
 def open_link_by_id(storage, user_id, text):
     error = ''
     try:
@@ -233,6 +240,7 @@ def open_link_by_id(storage, user_id, text):
     return '', answer_text
 
 
+# Показывает счет (статистику)
 def get_score(storage, user_id):
     return '', storage.data[user_id]['games_count'], storage.data[user_id]['games_won']
 
@@ -339,7 +347,8 @@ def c_score(session_continues, storage, user_id, username):
         storage.new_user(username, user_id)
     error, games_count, games_won = get_score(storage, user_id)
 
-    return error, u'Игр сыграно: ' + unicode(games_count) + u'\nВы победили в ' + unicode(games_won) + u' из них', None
+    return error, dictionary['score1'] + unicode(games_count) + dictionary['score2'] + \
+        unicode(games_won) + dictionary['score3'], None
 
 
 def c_open(session_continues, storage, user_id, username):
@@ -354,7 +363,7 @@ def c_open(session_continues, storage, user_id, username):
                                               state='waitForCommandAnswer',
                                               question='answer_opening_article_id'
                                               )
-        return error, u'Введите номер статьи из списка', None
+        return error, dictionary['open_to_get_link'], None
 
 
 def c_answer(session_continues, storage, user_id, username, text):
@@ -392,7 +401,7 @@ def understand_text(session_continues, storage, user_id, username, text):
                                               question=''
                                               )
         if text == u'cancel':
-            return error, u'Вы отменили выбор', None
+            return error, dictionary['you_canceled_article'], None
         error_get, answer_text = answer_article_to_change_id(storage, user_id, text)
         error += error_get
         return error, answer_text, None

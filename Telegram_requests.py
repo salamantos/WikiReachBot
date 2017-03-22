@@ -12,6 +12,7 @@ sys.setdefaultencoding('utf8')
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 
+# Получаем данные из обновления
 def extract_update_info(update_object):
     error = ''
     if update_object.edited_message is not None:
@@ -36,6 +37,7 @@ def extract_update_info(update_object):
     return error, update_id, received_user_id, chat_id, received_username, received_text, request_date
 
 
+# Пытаемся отправить сообщение из очереди
 def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_answer_text, reply_markup):
     error = ''
 
@@ -61,6 +63,7 @@ def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_a
     return error, True
 
 
+# Отвечает за отправку и временное хранение сообщений
 def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, reply_markup=None):
     # С пустой строкой ответа просто отправляет данные из очереди
     class Queue:
@@ -135,12 +138,14 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
     return error
 
 
+# Инициализация бота
 def init_bot(init_token):
     bot = TelegramBot(init_token)
     bot.update_bot_info().wait()
     return bot
 
 
+# Вывод в логи имени бота
 def write_bot_name(log_file, bot):
     try:
         log_write(log_file, 'sys', bot.username + '\n', sys_time())
@@ -149,6 +154,7 @@ def write_bot_name(log_file, bot):
         return 'No internet connection'
 
 
+# Получение обновлений с сервера Телеграма
 def get_updates_for_bot(bot, offset):
     result = bot.get_updates(offset).wait()
     if result is None:

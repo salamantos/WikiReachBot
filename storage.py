@@ -6,6 +6,7 @@ import secret_settings
 
 
 # Здесь хранится информация текущей сессии: какие пользователи делали какие запросы и т.д.
+# В БД информация о статистике и настройках игры
 class Storage:
     def __init__(self):
         self.data = dict()
@@ -35,6 +36,7 @@ class Storage:
 
         self.db_sync_download(user_id)
 
+    # Вносит изменения в локальное хранилище и синхронизируется с БД
     def modify_local_storage(self, user_id, state=None, question=None, game=None, last_message_sent=None,
                              goal_article_url=None, goal_article_header=None, difficulty=None, temp_data=None):
         if state is not None:
@@ -57,15 +59,18 @@ class Storage:
         error = self.db_sync_upload(user_id)
         return error
 
+    # Отправка локальных данных на сервер
     def db_sync_upload(self, user_id, games_won=None):
         # Количество выигранных/проигранных игр обновляется отдельно от остальных данных!!!
         error = ''
         try:
+            # Проверка на наличие информации в локальном хранилище о данном пользователе
             if user_id not in self.data:
                 sql = "SELECT * FROM user_storage WHERE user_id = %(user_id)s" % {"user_id": user_id}
                 self.db.ping(True)
                 self.cursor.execute(sql)
                 result = self.cursor.fetchall()
+                # Проверка на существование записи о пользователе
                 if len(result) == 0:
                     sql = """INSERT INTO user_storage
                          (user_id, username, goal_article_url, goal_article_header, difficulty)
@@ -77,6 +82,7 @@ class Storage:
                              "goal_article_header": self.data[user_id]['goal_article_header'],
                              "difficulty": self.data[user_id]['difficulty']
                              }
+                    # Проверяем, не разорвано ли соединение. Если да, восстанавливаем
                     self.db.ping(True)
                     # Исполняем SQL-запрос
                     self.cursor.execute(sql)
@@ -84,6 +90,7 @@ class Storage:
                     self.db.commit()
                     return error
 
+            # Если изменяем только информацию о статистике
             if games_won is not None:
                 self.data[user_id]['games_count'] += 1
                 if games_won:
@@ -113,11 +120,12 @@ class Storage:
             self.cursor.execute(sql)
             # Применяем изменения к базе данных
             self.db.commit()
-        except ZeroDivisionError:  # (AttributeError, MySQLdb.OperationalError):
+        except Exception:  # (AttributeError, MySQLdb.OperationalError):
             error = 'DB connection error'
             print error
         return error
 
+    # Скачивание данных с сервера
     def db_sync_download(self, user_id):
         error = ''
         try:
@@ -169,5 +177,4 @@ class Storage:
         self.db.close()
 
     def del_user(self, user_id):
-        # del (self.data[user_id])
         self.new_user(self, user_id)

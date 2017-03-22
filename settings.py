@@ -82,7 +82,14 @@ dictionary = {
               u''' переходов (тоже можно поменять)
 # Собственно, всё :D
 
-P.S. Не пугайтесь, если ссылок больше 1000, это нормально))''']
+P.S. Не пугайтесь, если ссылок больше 1000, это нормально))'''],
+    'score1': u'Игр сыграно: ',
+    'score2': u'\nВы победили в ',
+    'score3': u' из них',
+    'open_to_get_link': u'Введите номер статьи из списка',
+    'you_canceled_article': u'Вы отменили выбор',
+    'articles_found': u'Найденные статьи:\n',
+    'select_article_or_cancel': u'\nВыберите нужную или наберите cancel для отмены'
 }
 
 # entities=[MessageEntity(type=u'bold', offset=0, length=3, url=None, user=None)]
