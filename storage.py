@@ -12,7 +12,8 @@ class Storage:
         self.data = dict()
 
         # подключаемся к базе данных
-        self.db = MySQLdb.connect(host=secret_settings.host, user=secret_settings.user, passwd=secret_settings.passwd,
+        self.db = MySQLdb.connect(host=secret_settings.host, user=secret_settings.user,
+                                  passwd=secret_settings.passwd,
                                   db=secret_settings.db)
         self.db.set_character_set('utf8')
         # формируем курсор, с помощью которого можно исполнять SQL-запросы
@@ -23,7 +24,8 @@ class Storage:
         self.data[user_id] = {
             'username': username,
             'state': 'waitForStart',
-            'question': '',  # Когда просим ответить на каой-то вопрос (какую статью сделать целевой)
+            'question': '',
+            # Когда просим ответить на какой-то вопрос (какую статью сделать целевой)
             'game': {},
             'last_message_sent': 0,
             'temp_data': '',
@@ -37,8 +39,10 @@ class Storage:
         self.db_sync_download(user_id)
 
     # Вносит изменения в локальное хранилище и синхронизируется с БД
-    def modify_local_storage(self, user_id, state=None, question=None, game=None, last_message_sent=None,
-                             goal_article_url=None, goal_article_header=None, difficulty=None, temp_data=None):
+    def modify_local_storage(self, user_id, state=None, question=None, game=None,
+                             last_message_sent=None,
+                             goal_article_url=None, goal_article_header=None, difficulty=None,
+                             temp_data=None):
         if state is not None:
             self.data[user_id]['state'] = state
         if question is not None:
@@ -66,7 +70,8 @@ class Storage:
         try:
             # Проверка на наличие информации в локальном хранилище о данном пользователе
             if user_id not in self.data:
-                sql = "SELECT * FROM user_storage WHERE user_id = %(user_id)s" % {"user_id": user_id}
+                sql = "SELECT * FROM user_storage WHERE user_id = %(user_id)s" % {
+                    "user_id": user_id}
                 self.db.ping(True)
                 self.cursor.execute(sql)
                 result = self.cursor.fetchall()
@@ -112,8 +117,10 @@ class Storage:
                                      WHERE user_id = '%(user_id)s'
                                   """ % {"user_id": user_id,
                                          "username": self.data[user_id]['username'],
-                                         "goal_article_url": self.data[user_id]['goal_article_url'],
-                                         "goal_article_header": self.data[user_id]['goal_article_header'],
+                                         "goal_article_url": self.data[user_id][
+                                             'goal_article_url'],
+                                         "goal_article_header": self.data[user_id][
+                                             'goal_article_header'],
                                          "difficulty": self.data[user_id]['difficulty']
                                          }
             # Проверяем соединение и переподключаемся, если нужно

@@ -19,7 +19,8 @@ def extract_update_info(update_object):
         error += 'ut Edited message'
     elif update_object.message is None:
         error += 'ut None message'
-    elif update_object.message.new_chat_member is not None or update_object.message.left_chat_member is not None:
+    elif update_object.message.new_chat_member is not None \
+            or update_object.message.left_chat_member is not None:
         error += 'ut User join/left'
 
     if error != '':
@@ -34,11 +35,13 @@ def extract_update_info(update_object):
     request_date = update_object.message.date
     received_text = update_object.message.text
 
-    return error, update_id, received_user_id, chat_id, received_username, received_text, request_date
+    return error, update_id, received_user_id, chat_id, received_username, received_text, \
+        request_date
 
 
 # Пытаемся отправить сообщение из очереди
-def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_answer_text, reply_markup):
+def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_answer_text,
+                           reply_markup):
     error = ''
 
     if reply_markup is None:
@@ -54,9 +57,10 @@ def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_a
                                           )
     if isinstance(result, Error):
         # Пытаемся снова через больший промежуток времени
-        error += storage.modify_local_storage(send_user_id,
-                                              last_message_sent=sys_time() + settings.big_timeout_personal_messages
-                                              )
+        error += storage.modify_local_storage(
+            send_user_id,
+            last_message_sent=sys_time() + settings.big_timeout_personal_messages
+            )
         print 5
         return error, False
 
@@ -64,7 +68,8 @@ def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_a
 
 
 # Отвечает за отправку и временное хранение сообщений
-def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, reply_markup=None, del_msg=False):
+def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, reply_markup=None,
+           del_msg=False):
     # С пустой строкой ответа просто отправляет данные из очереди
     class Queue:
         def __init__(self):
@@ -95,9 +100,11 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
         temp_queue = Queue()
         try:
             while not answer.queue.is_empty():
-                send_user_id_from_queue1, chat_id1, send_answer_text1, reply_markup1 = answer.queue.dequeue()
+                send_user_id_from_queue1, chat_id1, send_answer_text1, reply_markup1 = \
+                    answer.queue.dequeue()
                 if send_user_id != send_user_id_from_queue1:
-                    temp_queue.enqueue((send_user_id_from_queue1, chat_id1, send_answer_text1, reply_markup1))
+                    temp_queue.enqueue(
+                        (send_user_id_from_queue1, chat_id1, send_answer_text1, reply_markup1))
 
             while not temp_queue.is_empty():
                 answer.queue.enqueue((temp_queue.dequeue()))
@@ -119,9 +126,11 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
     try:
         while not answer.queue.is_empty():
             send_user_id, chat_id, send_answer_text, reply_markup = answer.queue.dequeue()
-            if (sys_time() - storage.data[send_user_id]['last_message_sent'] > settings.timeout_personal_messages) \
+            if (sys_time() - storage.data[send_user_id][
+                'last_message_sent'] > settings.timeout_personal_messages) \
                     and send_user_id not in users_skip_list:
-                error_get, success = send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id,
+                error_get, success = send_answer_from_queue(log_file, storage, bot, send_user_id,
+                                                            chat_id,
                                                             send_answer_text, reply_markup)
                 error += error_get
                 if success:

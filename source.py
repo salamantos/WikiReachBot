@@ -50,7 +50,8 @@ try:
         updates = get_updates_for_bot(bot, offset)  # Если нет обновлений, вернет пустой список
         for update in updates:
             # Получаем информацию о сообщении
-            error_get, offset, user_id, chat_id, username, text, message_date = extract_update_info(update)
+            error_get, offset, user_id, chat_id, username, text, \
+                message_date = extract_update_info(update)
             error += error_get
             if error != '':
                 offset += 1
@@ -79,15 +80,17 @@ try:
                         text = re.sub(r'@WikiReachBot', '', text)
                     if '/answer' in text:
                         text = re.sub(r'/answer ', '', text)
-                        error_get, answer_text, reply_markup = commands_list['/answer'](user_id in storage.data,
-                                                                                        storage,
-                                                                                        user_id, username, text)
+                        error_get, answer_text, reply_markup = commands_list['/answer'](
+                            user_id in storage.data,
+                            storage,
+                            user_id, username, text)
                         error += error_get
                         give_answer = True
 
                     if not give_answer:
-                        error_get, answer_text, reply_markup = commands_list.get(text)(user_id in storage.data, storage,
-                                                                                       user_id, username)
+                        error_get, answer_text, reply_markup = commands_list.get(text)(
+                            user_id in storage.data, storage,
+                            user_id, username)
                         error += error_get
 
                 except TypeError:
@@ -98,7 +101,8 @@ try:
 
             # Если текстовый запрос, пытаемся понять его
             if not give_answer:
-                error_get, answer_text, reply_markup = understand_text(user_id in storage.data, storage,
+                error_get, answer_text, reply_markup = understand_text(user_id in storage.data,
+                                                                       storage,
                                                                        user_id, username, text)
                 error += error_get
                 give_answer = True
@@ -110,7 +114,8 @@ try:
                     del_msg = True
                 else:
                     del_msg = False
-                error += answer(log_file, storage, bot, user_id, chat_id, answer_text, reply_markup, del_msg=False)
+                error += answer(log_file, storage, bot, user_id, chat_id, answer_text,
+                                reply_markup, del_msg=False)
             else:
                 print "err: "
                 print error
