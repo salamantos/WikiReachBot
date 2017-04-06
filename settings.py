@@ -106,15 +106,12 @@ random_page_link = 'https://ru.wikipedia.org/wiki/%D0%A1%D0%BB%D1%83%D0%B6' \
                    '%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0' \
                    '%D0%BD%D0%B8%D1%86%D0%B0 '
 
-default_article_url = 'https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D1%88%D0%BA%D0%B0'
-default_article_header = u'Кошка'
+default_article_url = 'https://ru.wikipedia.org/wiki/%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F'
+default_article_header = u'Россия'
 
 hitler_article_url = 'https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D1%82%D0%BB%D0%B5%D1%80,' \
                      '_%D0%90%D0%B4%D0%BE%D0%BB%D1%8C%D1%84 '
 hitler_article_header = u'Гитлер, Адольф'
-
-default_article_url = hitler_article_url
-default_article_header = hitler_article_header
 
 # Error prefixes:
 # ut - update type - Если пришло не сообщение
