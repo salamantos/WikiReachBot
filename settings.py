@@ -12,7 +12,7 @@ search_template_postfix = u'&title=%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0
 
 max_links_count = 100
 max_messages_count = 5  # Если 5 или меньше, выводим полностью
-split_messages_count = 3  # Если больше max_messages_count, выводим первые 3 и мпрашиваем, нужно ли еще
+split_messages_count = 3  # Если больше max_messages_count, выводим первые 3 и спрашиваем, нужно ли еще
 
 timeout_personal_messages = 1.5  # seconds
 big_timeout_personal_messages = 25
@@ -39,7 +39,7 @@ dictionary = {
     'non_existent_command': u'Такой команды нет :с',
     'this_is_links_list': u'Вот список ссылок по статье ',
     'your_goal_is': u'\n(Вам нужно дойти до статьи\n',
-    'what_you_want_to_choose': u')\n\nНапишите номер выбранной ссылки',
+    'what_you_want_to_choose': u'Напишите номер выбранной ссылки',
     'goal_article_was_changed': u'Целевая статья успешно изменена на ',
     'enter_article_link': u'Введите название статьи или ссылку на неё',
     'congratulations': u'Поздравляю, вы победили за ',
@@ -89,7 +89,9 @@ P.S. Не пугайтесь, если ссылок больше 1000, это н
     'open_to_get_link': u'Введите номер статьи из списка',
     'you_canceled_article': u'Вы отменили выбор',
     'articles_found': u'Найденные статьи:\n',
-    'select_article_or_cancel': u'\nВыберите нужную или наберите cancel для отмены'
+    'select_article_or_cancel': u'\nВыберите нужную или наберите cancel для отмены',
+    'choose_or_need_more': u'Показана чать ссылок. Напишите номер выбранной ссылки или more, чтобы загрузить еще',
+    'more_links': u'Еще ссылки:\n'
 }
 
 # entities=[MessageEntity(type=u'bold', offset=0, length=3, url=None, user=None)]

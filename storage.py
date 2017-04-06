@@ -97,9 +97,11 @@ class Storage:
                     self.data[user_id]['games_won'] += 1
                     sql = """UPDATE user_storage SET
                                          games_count = games_count + 1,
-                                         games_won = games_won + 1"""
+                                         games_won = games_won + 1
+                                         WHERE user_id = '%(user_id)s'""" % {"user_id": user_id}
                 else:
-                    sql = 'UPDATE user_storage SET games_count = games_count + 1'
+                    sql = """UPDATE user_storage SET games_count = games_count + 1
+                                         WHERE user_id = '%(user_id)s'""" % {"user_id": user_id}
             else:
                 sql = """UPDATE user_storage
                                      SET

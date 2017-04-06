@@ -104,7 +104,13 @@ try:
                 give_answer = True
 
             if error == '' or 'Wrong url' in error:
-                error += answer(log_file, storage, bot, user_id, chat_id, answer_text, reply_markup)
+
+                if storage.data[user_id]['question'] == 'answer_article_id' or \
+                                storage.data[user_id]['state'] == 'waitForStart':
+                    del_msg = True
+                else:
+                    del_msg = False
+                error += answer(log_file, storage, bot, user_id, chat_id, answer_text, reply_markup, del_msg=False)
             else:
                 print "err: "
                 print error

@@ -64,7 +64,7 @@ def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_a
 
 
 # Отвечает за отправку и временное хранение сообщений
-def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, reply_markup=None):
+def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, reply_markup=None, del_msg=False):
     # С пустой строкой ответа просто отправляет данные из очереди
     class Queue:
         def __init__(self):
@@ -91,7 +91,7 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
         answer.queue = Queue()
 
     # Удаляем из очереди все предыдущие неотправленные сообщения этому пользователю
-    if len(send_answer_text) != 0:
+    if del_msg and len(send_answer_text) != 0:
         temp_queue = Queue()
         try:
             while not answer.queue.is_empty():
