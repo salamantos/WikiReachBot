@@ -35,18 +35,21 @@ def open_url(url):
     link_id = 1
     # Формируем список ссылок, извлекаем адрес и название статьи
     for link in a:
-        href = link.get('href')
-        title = link.get('title')
-        # inner_html = link.get_text()
+        try:
+            href = link.get('href')
+            title = link.get('title')
+            # inner_html = link.get_text()
 
-        if not ('https' in href) and not (title is None):
-            next_link = False
-            for black_word in settings.black_list:
-                if black_word in title:
-                    next_link = True
-                if 'img' in str(link):
-                    next_link = True
-            if not next_link:
-                result.append([link_id, title, href])
-                link_id += 1
+            if not ('https' in href) and not (title is None):
+                next_link = False
+                for black_word in settings.black_list:
+                    if black_word in title:
+                        next_link = True
+                    if 'img' in str(link):
+                        next_link = True
+                if not next_link:
+                    result.append([link_id, title, href])
+                    link_id += 1
+        except TypeError:
+            pass
     return '', result, current_page_link, current_page_header
