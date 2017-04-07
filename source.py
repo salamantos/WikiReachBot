@@ -128,8 +128,8 @@ try:
 except KeyboardInterrupt:
     log_write(log_file, 'endl', '', sys_time())
     log_write(log_file, 'sys', 'Бот остановлен.', sys_time())
-# except:
-#     log_write('Неизвестная ошибка')
+except Exception:
+    log_write(log_file, 'sys', '\nНеизвестная ошибка', sys_time())
 finally:
     log_write(log_file, 'sys', '------------- Конец сеанса --------------\n\n\n', sys_time())
     log_file.close()
