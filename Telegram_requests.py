@@ -122,16 +122,15 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
                 answer.queue.enqueue((send_user_id, chat_id, answer_text, reply_markup))
 
     temp_queue = Queue()
-    users_skip_list = []
+    users_skip_list = []  # Пользователи, которым пока не отправляем сообщние
     try:
         while not answer.queue.is_empty():
             send_user_id, chat_id, send_answer_text, reply_markup = answer.queue.dequeue()
-            if (sys_time() - storage.data[send_user_id][
-                'last_message_sent'] > settings.timeout_personal_messages) \
-                    and send_user_id not in users_skip_list:
+            if (sys_time() - storage.data[send_user_id]['last_message_sent'] >
+                    settings.timeout_personal_messages) and send_user_id not in users_skip_list:
                 error_get, success = send_answer_from_queue(log_file, storage, bot, send_user_id,
-                                                            chat_id,
-                                                            send_answer_text, reply_markup)
+                                                            chat_id, send_answer_text,
+                                                            reply_markup)
                 error += error_get
                 if success:
                     continue

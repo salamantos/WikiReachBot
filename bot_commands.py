@@ -57,46 +57,74 @@ def init_game(storage, user_id):
     return error, answer_list
 
 
+def form_messages(storage, user_id, case, link=None):
+    sent_links_count = 0  # Число отправленных ссылок
+    answer_list = []  # Список собщений для отправки
+    links_list = storage.data[user_id]['game']['links_list']
+    if case == 'more_links':
+        answer_text = dictionary['more_links']
+        counter_start = storage.data[user_id]['game']['links_available']
+        counter_end = counter_start + settings.max_links_count * settings.split_messages_count
+    else:
+        answer_text = dictionary['this_is_links_list'] + str(link[1]) + ':\n'
+        counter_start = 0
+        counter_end = len(links_list)
+    if case == 'part_of_links':
+        counter_end = settings.max_links_count * settings.split_messages_count
+
+    counter = 1
+    i = counter_start
+    no_more_links = False
+    while i < counter_end:
+        add_text = unicode(links_list[i][0]) + '. ' + links_list[i][1] + '\n'
+        if len(answer_text) + len(add_text) > settings.max_message_size:
+            answer_list.append(answer_text)
+            answer_text = ''
+            counter = 0
+        else:
+            answer_text += add_text
+            if counter >= settings.max_links_count and links_list[i][0] != counter_start + \
+                    settings.max_links_count * settings.split_messages_count:
+                answer_list.append(answer_text)
+                answer_text = ''
+                counter = 0
+            i += 1
+        counter += 1
+        sent_links_count = i
+        # Если ссылки закончились
+        if i == len(links_list) and case == 'more_links':
+            storage.data[user_id]['game']['links_available'] = 1000000
+            answer_text = answer_text + '\n' + dictionary['what_you_want_to_choose']
+            no_more_links = True
+            break
+    sent_links_count -= counter_start
+    if not no_more_links and case == 'more_links':
+        answer_text += '\n' + dictionary['choose_or_need_more']
+    if case == 'all_links':
+        answer_text += dictionary['your_goal_is'] + storage.data[user_id]['goal_article_header'] +\
+                       dictionary['steps_made'] + \
+                       str(storage.data[user_id]['game']['links_count']) + ')\n\n' + \
+                       dictionary['what_you_want_to_choose']
+    if case == 'part_of_links':
+        answer_text += dictionary['your_goal_is'] + storage.data[user_id]['goal_article_header'] +\
+                       dictionary['steps_made'] + \
+                       str(storage.data[user_id]['game']['links_count']) + ')\n\n' + \
+                       dictionary['choose_or_need_more']
+    answer_list.append(answer_text)
+    return sent_links_count, answer_list
+
+
 # Вызывается при переходе на другую статью во время игры
 def answer_article_id(storage, user_id, text):
     error = ''
     if text == u'more':
         if storage.data[user_id]['game']['links_available'] != 1000000:
-            answer_list = []  # Список собщений для отправки
-            answer_text = dictionary['more_links']
-            links_list = storage.data[user_id]['game']['links_list']
-            counter_start = storage.data[user_id]['game']['links_available'] + 1
-            storage.data[user_id]['game'][
-                'links_available'] += settings.max_links_count * settings.split_messages_count
-            counter = 1
-            no_more_links = False
-            for i in xrange(counter_start,
-                            counter_start +
-                            settings.max_links_count * settings.split_messages_count):
-                # Если ссылки закончились
-                if i > len(links_list):
-                    storage.data[user_id]['game']['links_available'] = 1000000
-                    answer_text = answer_text + '\n' + dictionary['what_you_want_to_choose']
-                    no_more_links = True
-                    break
-                answer_text = answer_text + unicode(links_list[i - 1][0]) + '. ' + \
-                    links_list[i - 1][1] + '\n'
-                if counter >= settings.max_links_count and links_list[i - 1][
-                    0] != counter_start + \
-                        settings.max_links_count * settings.split_messages_count - 1:
-                    answer_list.append(answer_text)
-                    answer_text = ''
-                    counter = 0
-                counter += 1
-
-            if not no_more_links:
-                answer_text += '\n' + dictionary['choose_or_need_more']
-            answer_list.append(answer_text)
-
+            # Формируем сообщения
+            sent_links_count, answer_list = form_messages(storage, user_id, 'more_links')
+            storage.data[user_id]['game']['links_available'] += sent_links_count
             return '', answer_list
         else:
             return '', dictionary['wrong_id']
-
     try:
         article_id = int(text)
         if article_id > storage.data[user_id]['game']['links_available']:
@@ -129,51 +157,24 @@ def answer_article_id(storage, user_id, text):
         storage.del_user(user_id)
         return error, result
 
+    # Проверка, не попали ли на статью, где нет ссылок
+    if len(new_links_list) == 0:
+        result = dictionary['no_links_in_chosen_article']
+        error += storage.db_sync_upload(user_id, games_won=False)
+        storage.del_user(user_id)
+        return error, result
+
     storage.data[user_id]['game']['links_list'] = new_links_list
     storage.data[user_id]['game']['current_article_url'] = link[2]
     storage.data[user_id]['game']['current_article_header'] = link[1]
 
-    answer_list = []  # Список собщений для отправки
-    answer_text = dictionary['this_is_links_list'] + str(link[1]) + ':\n'
-
     if len(new_links_list) < settings.max_links_count * settings.max_messages_count:
+        sent_links_count, answer_list = form_messages(storage, user_id, 'all_links', link)
         storage.data[user_id]['game']['links_available'] = 1000000
-        counter = 1
-        for new_link in new_links_list:
-            answer_text = answer_text + unicode(new_link[0]) + '. ' + new_link[1] + '\n'
-            if counter >= settings.max_links_count:
-                answer_list.append(answer_text)
-                answer_text = ''
-                counter = 0
-            counter += 1
-
-        answer_text += dictionary['your_goal_is'] + \
-            storage.data[user_id]['goal_article_header'] + \
-            dictionary['steps_made'] + str(
-            storage.data[user_id]['game']['links_count']) + ')\n\n' + \
-            dictionary['what_you_want_to_choose']
-        answer_list.append(answer_text)
     else:
-        storage.data[user_id]['game'][
-            'links_available'] = settings.max_links_count * settings.split_messages_count
-        counter = 1
-        for new_link in new_links_list:
-            if new_link[0] > settings.max_links_count * settings.split_messages_count:
-                break
-            answer_text = answer_text + unicode(new_link[0]) + '. ' + new_link[1] + '\n'
-            if counter >= settings.max_links_count and new_link[0] != \
-                    settings.max_links_count * settings.split_messages_count:
-                answer_list.append(answer_text)
-                answer_text = ''
-                counter = 0
-            counter += 1
-
-        answer_text += dictionary['your_goal_is'] + \
-            storage.data[user_id]['goal_article_header'] + \
-            dictionary['steps_made'] + str(
-            storage.data[user_id]['game']['links_count']) + ')\n\n' + \
-            dictionary['choose_or_need_more']
-        answer_list.append(answer_text)
+        sent_links_count, answer_list = form_messages(storage, user_id, 'part_of_links', link)
+        storage.data[user_id]['game']['links_available'] = sent_links_count
+        pass
 
     return error, answer_list
 

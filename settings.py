@@ -20,6 +20,8 @@ split_messages_count = 3
 timeout_personal_messages = 1.5  # seconds
 big_timeout_personal_messages = 60
 
+max_message_size = 4096
+
 default_difficulty = 4
 
 difficulty_list = {
@@ -38,7 +40,7 @@ black_list = [u'Редактировать раздел', u'Википедия',
               u'Просмотр этого шаблона', u'Служебная:', u'Шаблон:', u'Увеличить', u'Ethnologue']
 
 dictionary = {
-    'no_text': u'Вы не написали текста, сударь (сударыня? o_O)',
+    'no_text': u'Вы не написали текста, сударь o_O',
     'non_existent_command': u'Такой команды нет :с',
     'this_is_links_list': u'Вот список ссылок по статье ',
     'your_goal_is': u'\n(Вам нужно дойти до статьи\n',
@@ -49,6 +51,7 @@ dictionary = {
     'steps': u' ходов!',
     'no_more_steps': u'У вас закончились ходы, но статья ',
     'not_reached': u' не достигнута',
+    'no_links_in_chosen_article': u'Вы проиграли! Выбрана статья без ссылок :(((',
     'steps_made': u'\n\nУже сделано ходов: ',
     'hello_at_start': u'Привет! Справка по командам: /help',
     'game_already_started': u'Вы уже начали игру :)',

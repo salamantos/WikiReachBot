@@ -7,7 +7,7 @@ from settings import dictionary
 from Telegram_requests import *
 
 # Включение бота
-reset_messages = raw_input('Reset messages? y/n\n')
+reset_messages = 'y'  # raw_input('Reset messages? y/n\n')
 if reset_messages == 'y':
     reset_messages = True
 else:
