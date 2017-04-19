@@ -22,15 +22,12 @@ def log_write(log_file, scenario, action, log_time, user='', log_user_id=''):
     # log_time = int(log_time)
     res_time = time.strftime('%Y-%m-%d %H:%M:%S', tuple_time)
     if scenario == 'usr':
-        log_file.write(
-            str(res_time) + ': @' + str(user) + ' (' + str(log_user_id) + ') написал: "' + str(
-                action) + '"\n')
+        log_file.write('{0}: @{1} ({2}) написал: "{3}"\n'.format(
+            res_time, user, log_user_id, action))
     elif scenario == 'bot':
-        log_file.write(
-            str(res_time) + ': ---> @' + str(user) + ' (' + str(
-                log_user_id) + ') бот ответил: "' + str(action) +
-            '"\n')
+        log_file.write('{0}: ---> @{1} ({2}) бот ответил: "{3}"\n'.format(
+            str(res_time), user, log_user_id, action))
     elif scenario == 'sys':
-        log_file.write(str(res_time) + ': ' + str(action) + '\n')
+        log_file.write('{0}: {1}\n'.format(res_time, action))
     elif scenario == 'endl':
         log_file.write('\n')

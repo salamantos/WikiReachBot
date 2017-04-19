@@ -29,9 +29,9 @@ class Storage:
             'game': {},
             'last_message_sent': 0,
             'temp_data': '',
-            'goal_article_url': settings.default_article_url,
-            'goal_article_header': settings.default_article_header,
-            'difficulty': settings.default_difficulty,
+            'goal_article_url': settings.DEFAULT_ARTICLE_URL,
+            'goal_article_header': settings.DEFAULT_ARTICLE_HEADER,
+            'difficulty': settings.DEFAULT_DIFFICULTY,
             'games_count': 0,
             'games_won': 0
         }

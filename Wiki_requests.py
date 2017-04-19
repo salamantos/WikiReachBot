@@ -23,8 +23,8 @@ def open_url(url):
         # Достаем данные о текущей статье
         current_page_link = soup.find(rel="canonical").get('href')
         current_page_header = soup.find(id="firstHeading").get_text()
-        print('Current Link is ' + current_page_link)
-        print('Current Page is ' + str(current_page_header).decode('utf-8') + '\n')
+        print('Current Link is {}'.format(current_page_link))
+        print('Current Page is {}\n'.format(current_page_header.decode('utf-8')))
 
         soup = soup.find(id="mw-content-text")
         a = soup.find_all('a')
@@ -42,7 +42,7 @@ def open_url(url):
 
             if not ('https' in href) and not (title is None):
                 next_link = False
-                for black_word in settings.black_list:
+                for black_word in settings.BLACK_LIST:
                     if black_word in title:
                         next_link = True
                     if 'img' in str(link):

@@ -2,7 +2,7 @@
 
 from Wiki_requests import *
 from twx.botapi import ReplyKeyboardMarkup
-from settings import dictionary
+from settings import *
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -19,8 +19,8 @@ def form_answer_from_links_list(answer_text, new_links_list, postfix_answer_text
     answer_list = []  # Список собщений для отправки
     counter = 1
     for new_link in new_links_list:
-        answer_text = answer_text + unicode(new_link[0]) + '. ' + new_link[1] + '\n'
-        if counter >= settings.max_links_count:
+        answer_text = '{0}{1}. {2}\n'.format(answer_text, unicode(new_link[0]), new_link[1])
+        if counter >= MAX_LINKS_COUNT:
             answer_list.append(answer_text)
             answer_text = ''
             counter = 0
@@ -34,15 +34,14 @@ def form_answer_from_links_list(answer_text, new_links_list, postfix_answer_text
 # Начало игры
 def init_game(storage, user_id):
     error = ''
-    link_to_open = settings.random_page_link
+    link_to_open = RANDOM_PAGE_LINK
     error_get, links_list, current_article_url, header = open_url(link_to_open)
     error += error_get
 
     answer_list = form_answer_from_links_list(
-        dictionary['this_is_links_list'] + str(header) + ':\n', links_list,
-        dictionary['your_goal_is'] + storage.data[user_id][
-            'goal_article_header'] +
-        ')\n\n' + dictionary['what_you_want_to_choose'])
+        '{0}{1}:\n'.format(THIS_IS_LINKS_LIST, header), links_list,
+        '{0}{1})\n\n{2}'.format(YOUR_GOAL_IS, storage.data[user_id]['goal_article_header'],
+                                WHAT_YOU_WANT_TO_CHOOSE))
 
     error += storage.modify_local_storage(user_id,
                                           state='game',
@@ -62,29 +61,29 @@ def form_messages(storage, user_id, case, link=None):
     answer_list = []  # Список собщений для отправки
     links_list = storage.data[user_id]['game']['links_list']
     if case == 'more_links':
-        answer_text = dictionary['more_links']
+        answer_text = MORE_LINKS
         counter_start = storage.data[user_id]['game']['links_available']
-        counter_end = counter_start + settings.max_links_count * settings.split_messages_count
+        counter_end = counter_start + MAX_LINKS_COUNT * SPLIT_MESSAGES_COUNT
     else:
-        answer_text = dictionary['this_is_links_list'] + str(link[1]) + ':\n'
+        answer_text = '{0}{1}:\n'.format(THIS_IS_LINKS_LIST, link[1])
         counter_start = 0
         counter_end = len(links_list)
     if case == 'part_of_links':
-        counter_end = settings.max_links_count * settings.split_messages_count
+        counter_end = MAX_LINKS_COUNT * SPLIT_MESSAGES_COUNT
 
     counter = 1
     i = counter_start
     no_more_links = False
     while i < counter_end:
-        add_text = unicode(links_list[i][0]) + '. ' + links_list[i][1] + '\n'
-        if len(answer_text) + len(add_text) > settings.max_message_size:
+        add_text = '{0}. {1}\n'.format(unicode(links_list[i][0]), links_list[i][1])
+        if len(answer_text) + len(add_text) > MAX_MESSAGE_SIZE:
             answer_list.append(answer_text)
             answer_text = ''
             counter = 0
         else:
             answer_text += add_text
-            if counter >= settings.max_links_count and links_list[i][0] != counter_start + \
-                    settings.max_links_count * settings.split_messages_count:
+            if counter >= MAX_LINKS_COUNT and links_list[i][0] != counter_start + \
+                    MAX_LINKS_COUNT * SPLIT_MESSAGES_COUNT:
                 answer_list.append(answer_text)
                 answer_text = ''
                 counter = 0
@@ -94,22 +93,20 @@ def form_messages(storage, user_id, case, link=None):
         # Если ссылки закончились
         if i == len(links_list) and case == 'more_links':
             storage.data[user_id]['game']['links_available'] = 1000000
-            answer_text = answer_text + '\n' + dictionary['what_you_want_to_choose']
+            answer_text = '{0}\n{1}'.format(answer_text, WHAT_YOU_WANT_TO_CHOOSE)
             no_more_links = True
             break
     sent_links_count -= counter_start
     if not no_more_links and case == 'more_links':
-        answer_text += '\n' + dictionary['choose_or_need_more']
+        answer_text += '\n{0}'.format(CHOOSE_OR_NEED_MORE)
     if case == 'all_links':
-        answer_text += dictionary['your_goal_is'] + storage.data[user_id]['goal_article_header'] +\
-                       dictionary['steps_made'] + \
-                       str(storage.data[user_id]['game']['links_count']) + ')\n\n' + \
-                       dictionary['what_you_want_to_choose']
+        answer_text += '{0}{1}{2}{3})\n\n{4}'.format(
+            YOUR_GOAL_IS, storage.data[user_id]['goal_article_header'],
+            STEPS_MADE, storage.data[user_id]['game']['links_count'], WHAT_YOU_WANT_TO_CHOOSE)
     if case == 'part_of_links':
-        answer_text += dictionary['your_goal_is'] + storage.data[user_id]['goal_article_header'] +\
-                       dictionary['steps_made'] + \
-                       str(storage.data[user_id]['game']['links_count']) + ')\n\n' + \
-                       dictionary['choose_or_need_more']
+        answer_text += '{0}{1}{2}{3})\n\n{4}'.format(
+            YOUR_GOAL_IS, storage.data[user_id]['goal_article_header'], STEPS_MADE,
+            storage.data[user_id]['game']['links_count'], CHOOSE_OR_NEED_MORE)
     answer_list.append(answer_text)
     return sent_links_count, answer_list
 
@@ -124,42 +121,43 @@ def answer_article_id(storage, user_id, text):
             storage.data[user_id]['game']['links_available'] += sent_links_count
             return '', answer_list
         else:
-            return '', dictionary['wrong_id']
+            return '', WRONG_ID
+    if int(text) < 0:
+        return '', WRONG_ID
     try:
         article_id = int(text)
         if article_id > storage.data[user_id]['game']['links_available']:
-            return '', dictionary['wrong_id']
+            return '', WRONG_ID
         links_list = storage.data[user_id]['game']['links_list']
         link = links_list[article_id - 1]
     except ValueError:
-        return '', dictionary['wrong_id']
+        return '', WRONG_ID
     except IndexError:
-        return '', dictionary['wrong_id']
+        return '', WRONG_ID
 
     error_get, new_links_list, current_article_url, header = open_url(
-        settings.url_prefix + link[2])
+        URL_PREFIX + link[2])
     error += error_get
     storage.data[user_id]['game']['links_count'] += 1
 
     # Проверка, не дошли ли еще и не закончились ли ходы
     if header == storage.data[user_id]['goal_article_header']:
-        result = dictionary['congratulations'] + str(
-            storage.data[user_id]['game']['links_count']) + \
-                 dictionary['steps']
+        result = '{0}{1}{2}'.format(
+            CONGRATULATIONS, storage.data[user_id]['game']['links_count'], STEPS)
         error += storage.db_sync_upload(user_id, games_won=True)
         storage.del_user(user_id)
         return error, result
 
     if storage.data[user_id]['game']['links_count'] >= storage.data[user_id]['difficulty']:
-        result = dictionary['no_more_steps'] + storage.data[user_id]['goal_article_header'] + \
-                 dictionary['not_reached']
+        result = '{0}{1}{2}'.format(
+            NO_MORE_STEPS, storage.data[user_id]['goal_article_header'], NOT_REACHED)
         error += storage.db_sync_upload(user_id, games_won=False)
         storage.del_user(user_id)
         return error, result
 
     # Проверка, не попали ли на статью, где нет ссылок
     if len(new_links_list) == 0:
-        result = dictionary['no_links_in_chosen_article']
+        result = NO_LINKS_IN_CHOSEN_ARTICLE
         error += storage.db_sync_upload(user_id, games_won=False)
         storage.del_user(user_id)
         return error, result
@@ -168,7 +166,7 @@ def answer_article_id(storage, user_id, text):
     storage.data[user_id]['game']['current_article_url'] = link[2]
     storage.data[user_id]['game']['current_article_header'] = link[1]
 
-    if len(new_links_list) < settings.max_links_count * settings.max_messages_count:
+    if len(new_links_list) < MAX_LINKS_COUNT * MAX_MESSAGES_COUNT:
         sent_links_count, answer_list = form_messages(storage, user_id, 'all_links', link)
         storage.data[user_id]['game']['links_available'] = 1000000
     else:
@@ -191,8 +189,8 @@ def change_article(storage, user_id, article_header, article_url, searching=Fals
             return error, 'Wrong url'
 
         if 'search' in current_article_url:
-            answer_list = form_answer_from_links_list(dictionary['articles_found'], new_links_list,
-                                                      dictionary['select_article_or_cancel'])
+            answer_list = form_answer_from_links_list(ARTICLES_FOUND, new_links_list,
+                                                      SELECT_ARTICLE_OR_CANCEL)
 
             error += storage.modify_local_storage(user_id,
                                                   state='waitForCommandAnswer',
@@ -212,7 +210,7 @@ def change_article(storage, user_id, article_header, article_url, searching=Fals
                                               goal_article_header=article_header,
                                               goal_article_url=article_url
                                               )
-        return error, dictionary['goal_article_was_changed'] + article_header
+        return error, GOAL_ARTICLE_WAS_CHANGED + article_header
     elif article_url is not None:
         error_get, tmp1, tmp2, article_header = open_url(article_url)
         error += error_get
@@ -226,12 +224,12 @@ def change_article(storage, user_id, article_header, article_url, searching=Fals
                                               goal_article_header=article_header,
                                               goal_article_url=article_url
                                               )
-        return error, dictionary['goal_article_was_changed'] + article_header
+        return error, GOAL_ARTICLE_WAS_CHANGED + article_header
     else:
         error += storage.modify_local_storage(user_id,
                                               question='article_link',
                                               )
-        return error, dictionary['enter_article_link']
+        return error, ENTER_ARTICLE_LINK
 
 
 # Вызывается при выборе статьи из предложенного результата поиска
@@ -241,25 +239,25 @@ def answer_article_to_change_id(storage, user_id, text):
         links_list = storage.data[user_id]['temp_data']
         link = links_list[article_id - 1]
     except ValueError:
-        return '', dictionary['wrong_id']
+        return '', WRONG_ID
     except IndexError:
-        return '', dictionary['wrong_id']
+        return '', WRONG_ID
 
-    new_links_list, current_article_url, header = open_url(settings.url_prefix + link[2])
-    result = change_article(storage, user_id, header, settings.url_prefix + current_article_url)
+    new_links_list, current_article_url, header = open_url(URL_PREFIX + link[2])
+    result = change_article(storage, user_id, header, URL_PREFIX + current_article_url)
     return '', result
 
 
 # Смена сложности игры
 def set_difficulty(storage, user_id):
-    reply_markup = ReplyKeyboardMarkup.create(settings.keyboard, one_time_keyboard=True)
+    reply_markup = ReplyKeyboardMarkup.create(KEYBOARD, one_time_keyboard=True)
 
     storage.modify_local_storage(user_id,
                                  state='waitForCommandAnswer',
                                  question='answer_difficulty'
                                  )
 
-    return '', dictionary['select_difficulty'], reply_markup
+    return '', SELECT_DIFFICULTY, reply_markup
 
 
 # Ответ на запрос о смене сложности
@@ -270,18 +268,18 @@ def answer_difficulty(storage, user_id, text):
                                               state='waitForStart',
                                               question=''
                                               )
-        return error, dictionary['selecting_difficulty_canceled'], None
+        return error, SELECTING_DIFFICULTY_CANCELED, None
     try:
         error += storage.modify_local_storage(user_id,
                                               state='waitForStart',
                                               question='',
-                                              difficulty=settings.difficulty_list[text]
+                                              difficulty=DIFFICULTY_LIST[text]
                                               )
-        return error, dictionary['difficulty_was_changed'] + str(
+        return error, DIFFICULTY_WAS_CHANGED + str(
             storage.data[user_id]['difficulty']), None
     except KeyError:
-        reply_markup = ReplyKeyboardMarkup.create(settings.keyboard, one_time_keyboard=True)
-        return error, dictionary['wrong_entered_difficulty'], reply_markup
+        reply_markup = ReplyKeyboardMarkup.create(KEYBOARD, one_time_keyboard=True)
+        return error, WRONG_ENTERED_DIFFICULTY, reply_markup
 
 
 # Выдает ссылку на статью
@@ -292,14 +290,14 @@ def open_link_by_id(storage, user_id, text):
         links_list = storage.data[user_id]['game']['links_list']
         link = links_list[article_id - 1]
     except ValueError:
-        return '', dictionary['wrong_id']
+        return '', WRONG_ID
     except IndexError:
-        return '', dictionary['wrong_id']
+        return '', WRONG_ID
 
     error += storage.modify_local_storage(user_id,
                                           question='answer_article_id'
                                           )
-    answer_text = [settings.url_prefix + link[2], u'Теперь продолжим, что вы выбираете?))']
+    answer_text = [URL_PREFIX + link[2], u'Теперь продолжим, что вы выбираете?))']
 
     return '', answer_text
 
@@ -317,23 +315,21 @@ def get_score(storage, user_id):
 def c_start(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
-    return '', dictionary['hello_at_start'], None
+    return '', HELLO_AT_START, None
 
 
 def c_help(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
-    return '', dictionary['commands_help'], None
+    return '', COMMANDS_HELP, None
 
 
 def c_rules(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
-    return '', dictionary['rules'][0] + \
-           storage.data[user_id]['goal_article_header'] + \
-           dictionary['rules'][1] + \
-           unicode(storage.data[user_id]['difficulty']) + \
-           dictionary['rules'][2], None
+    return '', '{0}{1}{2}{3}{4}'.format(
+        RULES[0], storage.data[user_id]['goal_article_header'], RULES[1],
+        unicode(storage.data[user_id]['difficulty']), RULES[2]), None
 
 
 def c_start_game(session_continues, storage, user_id, username):
@@ -346,22 +342,22 @@ def c_start_game(session_continues, storage, user_id, username):
         error += error_get
         return error, answer_text, None
     elif storage.data[user_id]['state'] == 'game':
-        return '', dictionary['game_already_started'], None
+        return '', GAME_ALREADY_STARTED, None
     else:
-        return '', dictionary['give_answer'], None
+        return '', GIVE_ANSWER, None
 
 
 def c_end_game(session_continues, storage, user_id, username):
     if not session_continues:
         storage.new_user(username, user_id)
-        return '', dictionary['you_not_play'], None
+        return '', YOU_NOT_PLAY, None
 
     if storage.data[user_id]['state'] == 'game':
         storage.del_user(user_id)
         error = storage.db_sync_upload(user_id, games_won=False)
-        return error, dictionary['game_stopped'], None
+        return error, GAME_STOPPED, None
     else:
-        return '', dictionary['you_not_play'], None
+        return '', YOU_NOT_PLAY, None
 
 
 def c_change_article(session_continues, storage, user_id, username, article_header=None,
@@ -378,15 +374,15 @@ def c_change_article(session_continues, storage, user_id, username, article_head
         error += error_get
         return error, answer_text, None
     elif storage.data[user_id]['state'] == 'game':
-        return '', dictionary['cant_change_article_while_playing'], None
+        return '', CANT_CHANGE_DIFFICULTY_WHILE_PLAYING, None
     else:
-        return '', dictionary['give_answer'], None
+        return '', GIVE_ANSWER, None
 
 
 def c_hitler_mode(session_continues, storage, user_id, username):
     result = c_change_article(session_continues, storage, user_id, username,
-                              settings.hitler_article_header,
-                              settings.hitler_article_url)
+                              HITLER_ARTICLE_HEADER,
+                              HITLER_ARTICLE_URL)
     return result
 
 
@@ -403,9 +399,9 @@ def c_set_difficulty(session_continues, storage, user_id, username):
         error += error_get
         return error, answer_text, reply_markup
     elif storage.data[user_id]['state'] == 'game':
-        return error, dictionary['cant_change_difficulty_while_playing'], None
+        return error, CANT_CHANGE_DIFFICULTY_WHILE_PLAYING, None
     else:
-        return error, dictionary['give_answer'], None
+        return error, GIVE_ANSWER, None
 
 
 def c_score(session_continues, storage, user_id, username):
@@ -413,8 +409,8 @@ def c_score(session_continues, storage, user_id, username):
         storage.new_user(username, user_id)
     error, games_count, games_won = get_score(storage, user_id)
 
-    return error, dictionary['score1'] + unicode(games_count) + dictionary['score2'] + \
-        unicode(games_won) + dictionary['score3'], None
+    return error, '{0}{1}{2}{3}{4}'.format(
+        SCORE1, unicode(games_count), SCORE2, unicode(games_won), SCORE3), None
 
 
 def c_open(session_continues, storage, user_id, username):
@@ -423,13 +419,13 @@ def c_open(session_continues, storage, user_id, username):
         storage.new_user(username, user_id)
 
     if storage.data[user_id]['state'] != 'game':
-        return '', dictionary['opening_just_while_playing'], None
+        return '', OPENING_JUST_WHILE_PLAYING, None
     else:
         error += storage.modify_local_storage(user_id,
                                               state='waitForCommandAnswer',
                                               question='answer_opening_article_id'
                                               )
-        return error, dictionary['open_to_get_link'], None
+        return error, OPEN_TO_GET_LINK, None
 
 
 def c_answer(session_continues, storage, user_id, username, text):
@@ -444,7 +440,7 @@ def understand_text(session_continues, storage, user_id, username, text):
     error = ''
     if not session_continues:
         storage.new_user(username, user_id)
-        return error, dictionary['invite_to_start'], None
+        return error, INVITE_TO_START, None
 
     if storage.data[user_id]['question'] == 'article_link':
         try:
@@ -453,12 +449,12 @@ def understand_text(session_continues, storage, user_id, username, text):
                 error += error_get
             else:
                 error_get, answer_text = change_article(storage, user_id, None,
-                                                        settings.search_template_prefix + text +
-                                                        settings.search_template_postfix, True)
+                                                        SEARCH_TEMPLATE_PREFIX + text +
+                                                        SEARCH_TEMPLATE_POSTFIX, True)
                 error += error_get
             return error, answer_text, None
         except ValueError:
-            return error, dictionary['wrong_entered_url'], None
+            return error, WRONG_ENTERED_URL, None
     elif storage.data[user_id]['question'] == 'answer_article_id':
         error_get, answer_text = answer_article_id(storage, user_id, text)
         error += error_get
@@ -469,7 +465,7 @@ def understand_text(session_continues, storage, user_id, username, text):
                                               question=''
                                               )
         if text == u'cancel':
-            return error, dictionary['you_canceled_article'], None
+            return error, YOU_CANCELED_ARTICLE, None
         error_get, answer_text = answer_article_to_change_id(storage, user_id, text)
         error += error_get
         return error, answer_text, None
@@ -480,7 +476,7 @@ def understand_text(session_continues, storage, user_id, username, text):
         error += error_get
         return error, answer_text, None
     else:
-        return error, dictionary['invite_to_start'], None
+        return error, INVITE_TO_START, None
 
 
 commands_list = {

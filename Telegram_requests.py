@@ -15,13 +15,16 @@ sys.setdefaultencoding('utf8')
 # Получаем данные из обновления
 def extract_update_info(update_object):
     error = ''
-    if update_object.edited_message is not None:
-        error += 'ut Edited message'
-    elif update_object.message is None:
-        error += 'ut None message'
-    elif update_object.message.new_chat_member is not None \
-            or update_object.message.left_chat_member is not None:
-        error += 'ut User join/left'
+    try:
+        if update_object.edited_message is not None:
+            error += 'ut Edited message'
+        elif update_object.message is None:
+            error += 'ut None message'
+        elif update_object.message.new_chat_member is not None \
+                or update_object.message.left_chat_member is not None:
+            error += 'ut User join/left'
+    except AttributeError:
+        error += 'AttributeError in extract_update_info'
 
     if error != '':
         return error, update_object.update_id, 0, 0, u'', u'', 0
@@ -59,8 +62,8 @@ def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_a
         # Пытаемся снова через больший промежуток времени
         error += storage.modify_local_storage(
             send_user_id,
-            last_message_sent=sys_time() + settings.big_timeout_personal_messages
-            )
+            last_message_sent=sys_time() + settings.BIG_TIMEOUT_PERSONAL_MESSAGES
+        )
         print 5
         return error, False
 
@@ -127,7 +130,7 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
         while not answer.queue.is_empty():
             send_user_id, chat_id, send_answer_text, reply_markup = answer.queue.dequeue()
             if (sys_time() - storage.data[send_user_id]['last_message_sent'] >
-                    settings.timeout_personal_messages) and send_user_id not in users_skip_list:
+                    settings.TIMEOUT_PERSONAL_MESSAGES) and send_user_id not in users_skip_list:
                 error_get, success = send_answer_from_queue(log_file, storage, bot, send_user_id,
                                                             chat_id, send_answer_text,
                                                             reply_markup)
@@ -156,7 +159,7 @@ def init_bot(init_token):
 # Вывод в логи имени бота
 def write_bot_name(log_file, bot):
     try:
-        log_write(log_file, 'sys', bot.username + '\n', sys_time())
+        log_write(log_file, 'sys', '{}\n'.format(bot.username), sys_time())
         return ''
     except TypeError:
         return 'No internet connection'

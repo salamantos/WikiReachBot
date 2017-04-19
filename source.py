@@ -3,7 +3,7 @@
 import re
 from bot_commands import commands_list, understand_text
 from storage import Storage
-from settings import dictionary
+from settings import *
 from Telegram_requests import *
 
 # Включение бота
@@ -15,7 +15,7 @@ else:
 
 log_file = open('logs/logs.txt', 'a')
 log_write(log_file, 'sys', '------------- Начало сеанса -------------', sys_time())
-bot = init_bot(settings.bot_token)
+bot = init_bot(BOT_TOKEN)
 error = write_bot_name(log_file, bot)
 if not error:
     print 'successfully'
@@ -56,6 +56,7 @@ try:
             if error != '':
                 offset += 1
                 print error
+                log_write(log_file, 'sys', error, sys_time())
                 error = ''
                 continue
             give_answer = False  # Готов ли ответ
@@ -63,7 +64,7 @@ try:
             # Если не текстовое сообщение
             if text is None:
                 text = u'(Нет текста)'
-                answer_text = dictionary['no_text']
+                answer_text = NO_TEXT
                 give_answer = True
 
             # Логи
@@ -96,7 +97,7 @@ try:
                 except TypeError:
                     if user_id not in storage.data:
                         storage.new_user(username, user_id)
-                    answer_text = dictionary['non_existent_command']
+                    answer_text = NON_EXISTENT_COMMAND
                 give_answer = True
 
             # Если текстовый запрос, пытаемся понять его

@@ -2,74 +2,74 @@
 
 # Настраиваемые параметры бота
 
-# bot_token = '353206446:AAEnwupmsYWkapfe3RLjRmCbJ4ZN_NNYJww'  # salamantos_first_bot
-bot_token = '312320944:AAHRVs-an8Jy0iTl9Q5sfzwPfv8GrwKuLV4'  # WikiReachBot
+# BOT_TOKEN = '353206446:AAEnwupmsYWkapfe3RLjRmCbJ4ZN_NNYJww'  # salamantos_first_bot
+BOT_TOKEN = '312320944:AAHRVs-an8Jy0iTl9Q5sfzwPfv8GrwKuLV4'  # WikiReachBot
 
-url_prefix = u'https://ru.wikipedia.org'  # https://ru.wikipedia.org/wiki/Кошка
-search_template_prefix = u'https://ru.wikipedia.org/w/index.php?search='
-search_template_postfix = u'&title=%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F%3A%D0' \
+URL_PREFIX = u'https://ru.wikipedia.org'  # https://ru.wikipedia.org/wiki/Кошка
+SEARCH_TEMPLATE_PREFIX = u'https://ru.wikipedia.org/w/index.php?search='
+SEARCH_TEMPLATE_POSTFIX = u'&title=%D0%A1%D0%BB%D1%83%D0%B6%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F%3A%D0' \
                           u'%9F%D0%BE%D0%B8%D1%81%D0%BA&go=%D0%9F%D0%B5%D1%80%D0%B5%D0%B9%D1%82' \
                           u'%D0%B8 '
 
-max_links_count = 100
+MAX_LINKS_COUNT = 300
 # Если 5 или меньше, выводим полностью
-max_messages_count = 5
+MAX_MESSAGES_COUNT = 2
 # Если больше max_messages_count, выводим первые 3 и спрашиваем, нужно ли еще
-split_messages_count = 3
+SPLIT_MESSAGES_COUNT = 1
 
-timeout_personal_messages = 1.5  # seconds
-big_timeout_personal_messages = 60
+TIMEOUT_PERSONAL_MESSAGES = 1.5  # seconds
+BIG_TIMEOUT_PERSONAL_MESSAGES = 80
 
-max_message_size = 4096
+MAX_MESSAGE_SIZE = 4096
 
-default_difficulty = 4
+DEFAULT_DIFFICULTY = 4
 
-difficulty_list = {
+DIFFICULTY_LIST = {
     u'Hard\n(3 перехода)': 3,
     u'Normal\n(4 перехода)': 4,
     u'Easy\n(5 переходов)': 5
 }
 
-keyboard = [
+KEYBOARD = [
     [u'Hard\n(3 перехода)', u'Normal\n(4 перехода)', u'Easy\n(5 переходов)'],
     [u'Отмена']
 ]
 
-black_list = [u'Редактировать раздел', u'Википедия', u'Ссылки на источники',
+BLACK_LIST = [u'Редактировать раздел', u'Википедия', u'Ссылки на источники',
               u'(Страница отсутствует)', u'(страница отсутствует)',
               u'Просмотр этого шаблона', u'Служебная:', u'Шаблон:', u'Увеличить', u'Ethnologue']
 
-dictionary = {
-    'no_text': u'Вы не написали текста, сударь o_O',
-    'non_existent_command': u'Такой команды нет :с',
-    'this_is_links_list': u'Вот список ссылок по статье ',
-    'your_goal_is': u'\n(Вам нужно дойти до статьи\n',
-    'what_you_want_to_choose': u'Напишите номер выбранной ссылки',
-    'goal_article_was_changed': u'Целевая статья успешно изменена на ',
-    'enter_article_link': u'Введите название статьи или ссылку на неё',
-    'congratulations': u'Поздравляю, вы победили за ',
-    'steps': u' ходов!',
-    'no_more_steps': u'У вас закончились ходы, но статья ',
-    'not_reached': u' не достигнута',
-    'no_links_in_chosen_article': u'Вы проиграли! Выбрана статья без ссылок :(((',
-    'steps_made': u'\n\nУже сделано ходов: ',
-    'hello_at_start': u'Привет! Справка по командам: /help',
-    'game_already_started': u'Вы уже начали игру :)',
-    'give_answer': u'Ответьте на вопрос, плез',
-    'you_not_play': u'Вы не играете сейчас в игру',
-    'game_stopped': u'Игра завершена',
-    'cant_change_article_while_playing': u'Нельзя сменить целевую статью во время игры',
-    'invite_to_start': u'Хотите начать игру?\nНаберите /start_game или посмотрите /help для '
-                       u'справки по командам',
-    'wrong_entered_url': u'Ссылка не работает, попробуйте снова',
-    'opening_just_while_playing': u'Открыть статью можно только во время игры',
-    'wrong_id': u'Неверный номер',
-    'cant_change_difficulty_while_playing': u'Нельзя сменить сложность во время игры',
-    'difficulty_was_changed': u'Сложность успешно изменена на ',
-    'wrong_entered_difficulty': u'Плез, выберите верное значение на появившейся клавиатуре',
-    'select_difficulty': u'Выберите сложноть на появившейся клавиатуре',
-    'selecting_difficulty_canceled': u'Отменено, вы можете начать игру: /start_game',
-    'commands_help': u'''Справка по командам:\n
+# Dictionary
+NO_TEXT = u'Вы не написали текста, сударь o_O'
+NON_EXISTENT_COMMAND = u'Такой команды нет :с'
+THIS_IS_LINKS_LIST = u'Вот список ссылок по статье '
+YOUR_GOAL_IS = u'\n(Вам нужно дойти до статьи\n'
+WHAT_YOU_WANT_TO_CHOOSE = u'Напишите номер выбранной ссылки'
+GOAL_ARTICLE_WAS_CHANGED = u'Целевая статья успешно изменена на '
+ENTER_ARTICLE_LINK = u'Введите название статьи или ссылку на неё'
+CONGRATULATIONS = u'Поздравляю, вы победили за '
+STEPS = u' ходов!'
+NO_MORE_STEPS = u'У вас закончились ходы, но статья '
+NOT_REACHED = u' не достигнута'
+NO_LINKS_IN_CHOSEN_ARTICLE = u'Вы проиграли! Выбрана статья без ссылок :((('
+STEPS_MADE = u'\n\nУже сделано ходов: '
+HELLO_AT_START = u'Привет! Справка по командам: /help'
+GAME_ALREADY_STARTED = u'Вы уже начали игру :)'
+GIVE_ANSWER = u'Ответьте на вопрос, плез'
+YOU_NOT_PLAY = u'Вы не играете сейчас в игру'
+GAME_STOPPED = u'Игра завершена'
+CANT_CHANGE_ARTICLE_WHILE_PLAYING = u'Нельзя сменить целевую статью во время игры'
+INVITE_TO_START = u'Хотите начать игру?\nНаберите /start_game или посмотрите /help для ' \
+                  u'справки по командам'
+WRONG_ENTERED_URL = u'Ссылка не работает, попробуйте снова'
+OPENING_JUST_WHILE_PLAYING = u'Открыть статью можно только во время игры',
+WRONG_ID = u'Неверный номер',
+CANT_CHANGE_DIFFICULTY_WHILE_PLAYING = u'Нельзя сменить сложность во время игры',
+DIFFICULTY_WAS_CHANGED = u'Сложность успешно изменена на ',
+WRONG_ENTERED_DIFFICULTY = u'Плез, выберите верное значение на появившейся клавиатуре',
+SELECT_DIFFICULTY = u'Выберите сложноть на появившейся клавиатуре',
+SELECTING_DIFFICULTY_CANCELED = u'Отменено, вы можете начать игру: /start_game',
+COMMANDS_HELP = u'''Справка по командам:\n
 /rules - Узнать правила игры
 /help - Помощь по командам
 /start_game - Начать игру
@@ -79,42 +79,41 @@ dictionary = {
 /hitler_mode - REACH HITLER!
 /set_difficulty - Настроить сложность игры
 /open - Открыть статью в Википедии''',
-    'rules': [u'''Привет!
+RULES = [u'''Привет!
 Правила очень простые:
 # Я выдаю вам все ссылки из случайной статьи Википедии
 # Ваша задача - переходя по этим ссылкам дойти до целевой статьи
 # Целевая статья назвается ''',
-              u''' (её можно сменить)
+         u''' (её можно сменить)
 # Количество ходов ограничено: нужно уложиться в ''',
-              u''' переходов (тоже можно поменять)
+         u''' переходов (тоже можно поменять)
 # Собственно, всё :D
 
 P.S. Не пугайтесь, если ссылок больше 1000, это нормально))'''],
-    'score1': u'Игр сыграно: ',
-    'score2': u'\nВы победили в ',
-    'score3': u' из них',
-    'open_to_get_link': u'Введите номер статьи из списка',
-    'you_canceled_article': u'Вы отменили выбор',
-    'articles_found': u'Найденные статьи:\n',
-    'select_article_or_cancel': u'\nВыберите нужную или наберите cancel для отмены',
-    'choose_or_need_more': u'Показана часть ссылок. Напишите номер выбранной ссылки или more, '
-                           u'чтобы загрузить еще',
-    'more_links': u'Еще ссылки:\n'
-}
+SCORE1 = u'Игр сыграно: ',
+SCORE2 = u'\nВы победили в ',
+SCORE3 = u' из них',
+OPEN_TO_GET_LINK = u'Введите номер статьи из списка',
+YOU_CANCELED_ARTICLE = u'Вы отменили выбор',
+ARTICLES_FOUND = u'Найденные статьи:\n',
+SELECT_ARTICLE_OR_CANCEL = u'\nВыберите нужную или наберите cancel для отмены',
+CHOOSE_OR_NEED_MORE = u'Показана часть ссылок. Напишите номер выбранной ссылки или more, ' \
+                      u'чтобы загрузить еще',
+MORE_LINKS = u'Еще ссылки:\n'
 
 # entities=[MessageEntity(type=u'bold', offset=0, length=3, url=None, user=None)]
 
-random_page_link = 'https://ru.wikipedia.org/wiki/%D0%A1%D0%BB%D1%83%D0%B6' \
+RANDOM_PAGE_LINK = 'https://ru.wikipedia.org/wiki/%D0%A1%D0%BB%D1%83%D0%B6' \
                    '%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F:%D0%A1%D0%BB%D1%83%D1%87' \
                    '%D0%B0%D0%B9%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0' \
                    '%D0%BD%D0%B8%D1%86%D0%B0 '
 
-default_article_url = 'https://ru.wikipedia.org/wiki/%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F'
-default_article_header = u'Россия'
+DEFAULT_ARTICLE_URL = 'https://ru.wikipedia.org/wiki/%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F'
+DEFAULT_ARTICLE_HEADER = u'Россия'
 
-hitler_article_url = 'https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D1%82%D0%BB%D0%B5%D1%80,' \
+HITLER_ARTICLE_URL = 'https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D1%82%D0%BB%D0%B5%D1%80,' \
                      '_%D0%90%D0%B4%D0%BE%D0%BB%D1%8C%D1%84 '
-hitler_article_header = u'Гитлер, Адольф'
+HITLER_ARTICLE_HEADER = u'Гитлер, Адольф'
 
 # Error prefixes:
 # ut - update type - Если пришло не сообщение
