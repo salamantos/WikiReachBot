@@ -3,6 +3,7 @@
 from Wiki_requests import *
 from twx.botapi import ReplyKeyboardMarkup
 from settings import *
+import urllib2
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -180,7 +181,7 @@ def answer_article_id(storage, user_id, text):
 # Вызывается при наборе команды смены статьи
 def change_article(storage, user_id, article_header, article_url, searching=False):
     error = ''
-    # Если нужен поис по Википедии
+    # Если нужен поиск по Википедии
     if searching:
         error_get, new_links_list, current_article_url, header = open_url(article_url)
         error += error_get
@@ -448,9 +449,10 @@ def understand_text(session_continues, storage, user_id, username, text):
                 error_get, answer_text = change_article(storage, user_id, None, text)
                 error += error_get
             else:
+                article_url = '{0}{1}{2}'.format(
+                    SEARCH_TEMPLATE_PREFIX, urllib2.quote(text.encode('utf8')), SEARCH_TEMPLATE_POSTFIX)
                 error_get, answer_text = change_article(storage, user_id, None,
-                                                        SEARCH_TEMPLATE_PREFIX + text +
-                                                        SEARCH_TEMPLATE_POSTFIX, True)
+                                                        article_url, True)
                 error += error_get
             return error, answer_text, None
         except ValueError:
