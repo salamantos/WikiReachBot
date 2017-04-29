@@ -17,7 +17,8 @@ def sys_time():
     return time.time()
 
 
-def log_write(log_file, scenario, action, log_time, user='', log_user_id=''):
+def log_write(log_file, scenario, action, user='', log_user_id=''):
+    log_time = sys_time()
     tuple_time = time.gmtime(log_time)
     # log_time = int(log_time)
     res_time = time.strftime('%Y-%m-%d %H:%M:%S', tuple_time)

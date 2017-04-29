@@ -3,6 +3,7 @@ import sys
 from bs4 import BeautifulSoup
 import urllib2
 import settings
+from settings import ContinueError
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -29,7 +30,7 @@ def open_url(url):
         soup = soup.find(id="mw-content-text")
         a = soup.find_all('a')
     except Exception:  # AttributeError:
-        return 'Wrong url', [], '', ''
+        raise ContinueError('Wrong URL')
 
     result = []
     link_id = 1
@@ -51,5 +52,5 @@ def open_url(url):
                     result.append([link_id, title, href])
                     link_id += 1
         except TypeError:
-            pass
-    return '', result, current_page_link, current_page_header
+            pass  # Если не ссылка на статью, пропускаем ее
+    return result, current_page_link, current_page_header

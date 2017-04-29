@@ -2,6 +2,24 @@
 
 # Настраиваемые параметры бота
 
+# Exceptions
+
+
+class FatalError(Exception):
+    def __int__(self, text):
+        FatalError.txt = text
+
+
+class EasyError(Exception):
+    def __int__(self, text):
+        EasyError.txt = text
+
+
+class ContinueError(Exception):
+    def __int__(self, text):
+        ContinueError.txt = text
+
+
 # BOT_TOKEN = '353206446:AAEnwupmsYWkapfe3RLjRmCbJ4ZN_NNYJww'  # salamantos_first_bot
 BOT_TOKEN = '312320944:AAHRVs-an8Jy0iTl9Q5sfzwPfv8GrwKuLV4'  # WikiReachBot
 

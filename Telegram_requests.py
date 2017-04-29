@@ -1,5 +1,6 @@
 # coding=utf-8
 import settings
+from settings import FatalError, EasyError
 from logs import *
 from twx.botapi import TelegramBot, Error
 
@@ -17,17 +18,17 @@ def extract_update_info(update_object):
     error = ''
     try:
         if update_object.edited_message is not None:
-            error += 'ut Edited message'
+            error += 'Edited message'
         elif update_object.message is None:
-            error += 'ut None message'
+            error += 'None message'
         elif update_object.message.new_chat_member is not None \
                 or update_object.message.left_chat_member is not None:
-            error += 'ut User join/left'
+            error += 'User join/left'
     except AttributeError:
         error += 'AttributeError in extract_update_info'
 
     if error != '':
-        return error, update_object.update_id, 0, 0, u'', u'', 0
+        raise EasyError('extract_update_info error: {}'.format(error))
 
     # try AttributeError
     update_id = update_object.update_id
@@ -38,36 +39,34 @@ def extract_update_info(update_object):
     request_date = update_object.message.date
     received_text = update_object.message.text
 
-    return error, update_id, received_user_id, chat_id, received_username, received_text, \
+    return update_id, received_user_id, chat_id, received_username, received_text, \
         request_date
 
 
 # Пытаемся отправить сообщение из очереди
 def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_answer_text,
                            reply_markup):
-    error = ''
-
     if reply_markup is None:
         result = bot.send_message(chat_id, send_answer_text).wait()
         # print 1
-        log_write(log_file, 'bot', result, sys_time())
+        log_write(log_file, 'bot', result)
     else:
         result = bot.send_message(chat_id, send_answer_text, reply_markup=reply_markup).wait()
         # print 2
-        log_write(log_file, 'bot', result, sys_time())
-    error += storage.modify_local_storage(send_user_id,
+        log_write(log_file, 'bot', result)
+    storage.modify_local_storage(send_user_id,
                                           last_message_sent=sys_time()
                                           )
     if isinstance(result, Error):
         # Пытаемся снова через больший промежуток времени
-        error += storage.modify_local_storage(
+        storage.modify_local_storage(
             send_user_id,
             last_message_sent=sys_time() + settings.BIG_TIMEOUT_PERSONAL_MESSAGES
         )
         # print 5
-        return error, False
+        return False
 
-    return error, True
+    return True
 
 
 # Отвечает за отправку и временное хранение сообщений
@@ -146,7 +145,7 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
     except KeyError:
         error += 'KeyError'
 
-    return error
+    raise FatalError('Error in answer function: {}'.format(error))
 
 
 # Инициализация бота
@@ -159,10 +158,9 @@ def init_bot(init_token):
 # Вывод в логи имени бота
 def write_bot_name(log_file, bot):
     try:
-        log_write(log_file, 'sys', '{}\n'.format(bot.username), sys_time())
-        return ''
+        log_write(log_file, 'sys', '{}\n'.format(bot.username))
     except TypeError:
-        return 'No internet connection'
+        raise FatalError('No internet connection')
 
 
 # Получение обновлений с сервера Телеграма

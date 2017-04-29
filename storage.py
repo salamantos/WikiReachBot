@@ -1,15 +1,15 @@
 # coding=utf-8
 
 import settings
+from settings import FatalError, EasyError
 import MySQLdb
 import secret_settings
-from logs import *
 
 
 # Здесь хранится информация текущей сессии: какие пользователи делали какие запросы и т.д.
 # В БД информация о статистике и настройках игры
 class Storage:
-    def __init__(self, log_file):
+    def __init__(self):
         self.data = dict()
 
         # подключаемся к базе данных
@@ -19,7 +19,6 @@ class Storage:
         self.db.set_character_set('utf8')
         # формируем курсор, с помощью которого можно исполнять SQL-запросы
         self.cursor = self.db.cursor()
-        self.log_file = log_file
 
     # Добавляет нового пользователя во временное хранилище данных
     def new_user(self, username, user_id):
@@ -62,13 +61,11 @@ class Storage:
         if temp_data is not None:
             self.data[user_id]['temp_data'] = temp_data
 
-        error = self.db_sync_upload(user_id)
-        return error
+        self.db_sync_upload(user_id)
 
     # Отправка локальных данных на сервер
     def db_sync_upload(self, user_id, games_won=None):
         # Количество выигранных/проигранных игр обновляется отдельно от остальных данных!!!
-        error = ''
         try:
             # Проверка на наличие информации в локальном хранилище о данном пользователе
             if user_id not in self.data:
@@ -95,7 +92,7 @@ class Storage:
                     self.cursor.execute(sql)
                     # Применяем изменения к базе данных
                     self.db.commit()
-                    return error
+                    return
 
             # Если изменяем только информацию о статистике
             if games_won is not None:
@@ -132,13 +129,10 @@ class Storage:
             # Применяем изменения к базе данных
             self.db.commit()
         except Exception:  # (AttributeError, MySQLdb.OperationalError):
-            error = 'DB connection error'
-            log_write(self.log_file, 'sys', error, sys_time())
-        return error
+            raise FatalError('DB connection error')
 
     # Скачивание данных с сервера
     def db_sync_download(self, user_id):
-        error = ''
         try:
             sql = "SELECT * FROM user_storage WHERE user_id = %(user_id)s" % {"user_id": user_id}
             self.db.ping(True)
@@ -160,7 +154,7 @@ class Storage:
                 self.cursor.execute(sql)
                 # Применяем изменения к базе данных
                 self.db.commit()
-                return error
+                return
 
             sql = """SELECT * FROM user_storage
                      WHERE user_id = '%(user_id)s'
@@ -180,9 +174,7 @@ class Storage:
             self.data[user_id]['games_count'] = result[0][6]
             self.data[user_id]['games_won'] = result[0][7]
         except (AttributeError, MySQLdb.OperationalError):
-            error = 'DB connection error'
-            log_write(self.log_file, 'sys', error, sys_time())
-        return error
+            raise FatalError('DB connection error')
 
     def close_db(self):
         self.db.close()
