@@ -49,11 +49,11 @@ def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_a
 
     if reply_markup is None:
         result = bot.send_message(chat_id, send_answer_text).wait()
-        print 1
+        # print 1
         log_write(log_file, 'bot', result, sys_time())
     else:
         result = bot.send_message(chat_id, send_answer_text, reply_markup=reply_markup).wait()
-        print 2
+        # print 2
         log_write(log_file, 'bot', result, sys_time())
     error += storage.modify_local_storage(send_user_id,
                                           last_message_sent=sys_time()
@@ -64,7 +64,7 @@ def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_a
             send_user_id,
             last_message_sent=sys_time() + settings.BIG_TIMEOUT_PERSONAL_MESSAGES
         )
-        print 5
+        # print 5
         return error, False
 
     return error, True

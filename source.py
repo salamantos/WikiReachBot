@@ -13,33 +13,41 @@ if reset_messages == 'y':
 else:
     reset_messages = False
 
-log_file = open('logs/logs.txt', 'a')
+try:
+    log_file = open('logs/logs.txt', 'a')
+except Exception, err_exception:
+    print(err_exception)
+    exit(1)
 log_write(log_file, 'sys', '------------- Начало сеанса -------------', sys_time())
 bot = init_bot(BOT_TOKEN)
 error = write_bot_name(log_file, bot)
 if not error:
-    print 'successfully'
+    log_write(log_file, 'sys', 'Successfully started', sys_time())
 else:
-    print error
-    exit(0)
-storage = Storage()
+    log_write(log_file, 'sys', error, sys_time())
+    exit(1)
+storage = Storage(log_file)
 offset = 0
 
 # Пропускаем пропущенные сообщения
 if reset_messages:
     updates = get_updates_for_bot(bot, offset)
     if updates:
-        reset_file = open('logs/reset_file.txt', 'a')
-        reset_file.write(str(updates))
-        reset_file.close()
+        try:
+            with open('logs/reset_file.txt', 'a') as reset_file:
+                reset_file.write(str(updates))
+        except Exception, err_exception:
+            print(err_exception)
+            exit(1)
+
         offset = updates[-1].update_id + 1
 
 # log_file.close()  # Fix it!
 
 if not error:
-    print 'successfully'
+    log_write(log_file, 'sys', 'Successfully skipped messages', sys_time())
 else:
-    print error
+    log_write(log_file, 'sys', error, sys_time())
     error = ''
 
 # Запуск прослушки Телеграма
@@ -51,11 +59,10 @@ try:
         for update in updates:
             # Получаем информацию о сообщении
             error_get, offset, user_id, chat_id, username, text, \
-                message_date = extract_update_info(update)
+            message_date = extract_update_info(update)
             error += error_get
             if error != '':
                 offset += 1
-                print error
                 log_write(log_file, 'sys', error, sys_time())
                 error = ''
                 continue
@@ -118,8 +125,7 @@ try:
                 error += answer(log_file, storage, bot, user_id, chat_id, answer_text,
                                 reply_markup, del_msg=False)
             else:
-                print "err: "
-                print error
+                log_write(log_file, 'sys', error, sys_time())
                 error = ''
 
             offset += 1  # id следующего обновления

@@ -3,12 +3,13 @@
 import settings
 import MySQLdb
 import secret_settings
+from logs import *
 
 
 # Здесь хранится информация текущей сессии: какие пользователи делали какие запросы и т.д.
 # В БД информация о статистике и настройках игры
 class Storage:
-    def __init__(self):
+    def __init__(self, log_file):
         self.data = dict()
 
         # подключаемся к базе данных
@@ -18,6 +19,7 @@ class Storage:
         self.db.set_character_set('utf8')
         # формируем курсор, с помощью которого можно исполнять SQL-запросы
         self.cursor = self.db.cursor()
+        self.log_file = log_file
 
     # Добавляет нового пользователя во временное хранилище данных
     def new_user(self, username, user_id):
@@ -131,7 +133,7 @@ class Storage:
             self.db.commit()
         except Exception:  # (AttributeError, MySQLdb.OperationalError):
             error = 'DB connection error'
-            print error
+            log_write(self.log_file, 'sys', error, sys_time())
         return error
 
     # Скачивание данных с сервера
@@ -179,7 +181,7 @@ class Storage:
             self.data[user_id]['games_won'] = result[0][7]
         except (AttributeError, MySQLdb.OperationalError):
             error = 'DB connection error'
-            print error
+            log_write(self.log_file, 'sys', error, sys_time())
         return error
 
     def close_db(self):
