@@ -23,8 +23,8 @@ bot = init_bot(BOT_TOKEN)
 try:
     write_bot_name(log_file, bot)
     log_write(log_file, 'sys', 'Successfully started')
-except FatalError:
-    log_write(log_file, 'sys', FatalError.txt)
+except FatalError as exc_txt:
+    log_write(log_file, 'sys', exc_txt.txt)
     exit(1)
 storage = Storage()
 offset = 0
@@ -43,6 +43,8 @@ if reset_messages:
         offset = updates[-1].update_id + 1
 
 log_write(log_file, 'sys', 'Successfully skipped messages')
+
+print "bot started\n"  # Используется, чтобы из консоли можно было понять, что старт прошел успешно
 
 # Запуск прослушки Телеграма
 try:
@@ -113,22 +115,22 @@ try:
                 offset += 1  # id следующего обновления
             answer(log_file, storage, bot, 0, 0, '', None)
             time.sleep(0.01)
-        except ContinueError:
-            answer(log_file, storage, bot, user_id, chat_id, ContinueError.txt,
+        except ContinueError as exc_txt:
+            answer(log_file, storage, bot, user_id, chat_id, exc_txt.txt,
                    reply_markup, del_msg=False)
 
             offset += 1  # id следующего обновления
-        except EasyError:
+        except EasyError as exc_txt:
             offset += 1
-            log_write(log_file, 'sys', EasyError.txt)
+            log_write(log_file, 'sys', exc_txt.txt)
 
 except KeyboardInterrupt:
     log_write(log_file, 'endl', '')
     log_write(log_file, 'sys', 'Бот остановлен.')
-# except Exception:
-#     log_write(log_file, 'sys', 'Неизвестная ошибка', sys_time())
-except FatalError:
-    log_write(log_file, 'sys', FatalError.txt)
+except FatalError as exc_txt:
+    log_write(log_file, 'sys', exc_txt.txt)
+except Exception, exc_txt:
+    log_write(log_file, 'sys', 'Неизвестная ошибка: {}'.format(exc_txt), sys_time())
 finally:
     log_write(log_file, 'sys', '------------- Конец сеанса --------------\n\n\n')
     log_file.close()

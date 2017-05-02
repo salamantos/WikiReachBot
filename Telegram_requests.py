@@ -130,10 +130,9 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
             send_user_id, chat_id, send_answer_text, reply_markup = answer.queue.dequeue()
             if (sys_time() - storage.data[send_user_id]['last_message_sent'] >
                     settings.TIMEOUT_PERSONAL_MESSAGES) and send_user_id not in users_skip_list:
-                error_get, success = send_answer_from_queue(log_file, storage, bot, send_user_id,
+                success = send_answer_from_queue(log_file, storage, bot, send_user_id,
                                                             chat_id, send_answer_text,
                                                             reply_markup)
-                error += error_get
                 if success:
                     continue
             if send_user_id not in users_skip_list:
@@ -144,8 +143,8 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
             answer.queue.enqueue((temp_queue.dequeue()))
     except KeyError:
         error += 'KeyError'
-
-    raise FatalError('Error in answer function: {}'.format(error))
+    if error != '':
+        raise FatalError('Error in answer function: {}'.format(error))
 
 
 # Инициализация бота

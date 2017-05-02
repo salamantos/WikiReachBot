@@ -6,18 +6,18 @@
 
 
 class FatalError(Exception):
-    def __int__(self, text):
-        FatalError.txt = text
+    def __init__(self, text):
+        self.txt = text
 
 
 class EasyError(Exception):
-    def __int__(self, text):
-        EasyError.txt = text
+    def __init__(self, text):
+        self.txt = text
 
 
 class ContinueError(Exception):
-    def __int__(self, text):
-        ContinueError.txt = text
+    def __init__(self, text):
+        self.txt = text
 
 
 # BOT_TOKEN = '353206446:AAEnwupmsYWkapfe3RLjRmCbJ4ZN_NNYJww'  # salamantos_first_bot
