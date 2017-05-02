@@ -15,20 +15,16 @@ sys.setdefaultencoding('utf8')
 
 # Получаем данные из обновления
 def extract_update_info(update_object):
-    error = ''
     try:
         if update_object.edited_message is not None:
-            error += 'Edited message'
+            raise EasyError('extract_update_info error: message')
         elif update_object.message is None:
-            error += 'None message'
+            raise EasyError('extract_update_info error: None message')
         elif update_object.message.new_chat_member is not None \
                 or update_object.message.left_chat_member is not None:
-            error += 'User join/left'
+            raise EasyError('extract_update_info error: User join/left')
     except AttributeError:
-        error += 'AttributeError in extract_update_info'
-
-    if error != '':
-        raise EasyError('extract_update_info error: {}'.format(error))
+        raise EasyError('extract_update_info error: AttributeError')
 
     # try AttributeError
     update_id = update_object.update_id
@@ -40,7 +36,7 @@ def extract_update_info(update_object):
     received_text = update_object.message.text
 
     return update_id, received_user_id, chat_id, received_username, received_text, \
-        request_date
+           request_date
 
 
 # Пытаемся отправить сообщение из очереди
@@ -55,8 +51,8 @@ def send_answer_from_queue(log_file, storage, bot, send_user_id, chat_id, send_a
         # print 2
         log_write(log_file, 'bot', result)
     storage.modify_local_storage(send_user_id,
-                                          last_message_sent=sys_time()
-                                          )
+                                 last_message_sent=sys_time()
+                                 )
     if isinstance(result, Error):
         # Пытаемся снова через больший промежуток времени
         storage.modify_local_storage(
@@ -78,7 +74,7 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
             self.items = []
 
         def is_empty(self):
-            return self.items == []
+            return len(self) == 0
 
         def enqueue(self, item):
             self.items.insert(0, item)
@@ -86,10 +82,8 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
         def dequeue(self):
             return self.items.pop()
 
-        def size(self):
+        def __len__(self):
             return len(self.items)
-
-    error = ''
 
     # При первом вызове функции заводим очередь
     try:
@@ -111,7 +105,7 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
             while not temp_queue.is_empty():
                 answer.queue.enqueue((temp_queue.dequeue()))
         except KeyError:
-            error += 'KeyError'
+            raise FatalError('Error in answer function: KeyError')
 
     # Добавляем сообщения в очередь
     if len(send_answer_text) != 0:
@@ -131,8 +125,8 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
             if (sys_time() - storage.data[send_user_id]['last_message_sent'] >
                     settings.TIMEOUT_PERSONAL_MESSAGES) and send_user_id not in users_skip_list:
                 success = send_answer_from_queue(log_file, storage, bot, send_user_id,
-                                                            chat_id, send_answer_text,
-                                                            reply_markup)
+                                                 chat_id, send_answer_text,
+                                                 reply_markup)
                 if success:
                     continue
             if send_user_id not in users_skip_list:
@@ -142,9 +136,7 @@ def answer(log_file, storage, bot, send_user_id, chat_id, send_answer_text, repl
         while not temp_queue.is_empty():
             answer.queue.enqueue((temp_queue.dequeue()))
     except KeyError:
-        error += 'KeyError'
-    if error != '':
-        raise FatalError('Error in answer function: {}'.format(error))
+        raise FatalError('Error in answer function: KeyError')
 
 
 # Инициализация бота
