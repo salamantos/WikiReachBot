@@ -1,6 +1,6 @@
 # WikiReachBot
 
-It is a Telegram bot which created for playing in game "Reach Hitler is Wikipedia"
+This is the Telegram bot which created for playing the game "Reach Hitler in Wikipedia"
 
 ## Rules
 #### Правила очень простые:
